@@ -69,13 +69,15 @@ get_coordinates_tsne <- function(vectors, max_iter, verbose) {
 #' Plot function
 #'
 #' @param vectors [matrix] containing the `n` closest neighboor
-#' @param projection_type [character] defining the algorithm to use to compute the coordinates. `tsne` or `pca`
+#' @param projection_type [character] defining the algorithm to use to compute the coordinates. (`tsne` or `pca`)
 #' @param max_iter maximum number of epoch (for T-SNE learning)
 #' @param verbose print debug information (for T-SNE learning)
-#' @importFrom assertthat assert_that
+#' @importFrom assertthat assert_that is.string
 #' @export
 get_coordinates <- function(vectors, projection_type, max_iter = 500, verbose = FALSE) {
   assert_that(is.matrix(vectors))
+  assert_that(is.string(projection_type))
+  assert_that(projection_type %in% c("pca", "tsne"))
   coordinates <- switch(projection_type,
               tsne = get_coordinates_tsne(vectors, max_iter, verbose),
               pca = get_coordinates_pca(vectors = vectors))
@@ -101,11 +103,14 @@ center_coordinates <- function(coordinates) {
 #' @param text [character] containing the text related to the pivot vector
 #' @param projection_type [character] defining the algorithm to use to compute the coordinates
 #' @param annoy_model [RcppAnnoy] model
-#' @param n number of elements to retrieve
-#' @param search_k number of nodes to search in (Annoy parameter). Higher is better and slower.
+#' @param n number of neighbors to retrieve
+#' @param search_k number of nodes to search in ([RcppAnnoy] parameter). Higher = ++precision & --speed
+#' @param center_pivot put pivot text in the middle of the graph
 #' @param ... additional parameters used in [get_coordinates]
+#' @importFrom assertthat assert_that is.flag
 #' @export
-retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k = max(10000, 10 * n), ...) {
+retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k = max(10000, 10 * n), center_pivot = TRUE, ...) {
+    assert_that(is.flag(center_pivot))
     dict <- attr(annoy_model, "dict")
     search_k <- min(length(dict), search_k)
     l <- get_neighbors(text, dict, annoy_model, n, search_k)
@@ -116,7 +121,7 @@ retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k =
     mat <- do.call(rbind, vectors)
     rownames(mat) <- dict[l$item]
     df <- get_coordinates(mat, projection_type, ...)
-    center_coordinates(df)
+    if (center_pivot) center_coordinates(df) else df
 }
 
 #' Plot vectors on a 2D plan

@@ -5,7 +5,7 @@
 \title{Retrieve a list of neighbor vectors}
 \usage{
 retrieve_neighbors(text, projection_type, annoy_model, n,
-  search_k = max(10000, 10 * n), ...)
+  search_k = max(10000, 10 * n), center_pivot = TRUE, ...)
 }
 \arguments{
 \item{text}{\link{character} containing the text related to the pivot vector}
@@ -14,9 +14,11 @@ retrieve_neighbors(text, projection_type, annoy_model, n,
 
 \item{annoy_model}{\link{RcppAnnoy} model}
 
-\item{n}{number of elements to retrieve}
+\item{n}{number of neighbors to retrieve}
 
-\item{search_k}{number of nodes to search in (Annoy parameter). Higher is better and slower.}
+\item{search_k}{number of nodes to search in (\link{RcppAnnoy} parameter). Higher = ++precision & --speed}
+
+\item{center_pivot}{put pivot text in the middle of the graph}
 
 \item{...}{additional parameters used in \link{get_coordinates}}
 }

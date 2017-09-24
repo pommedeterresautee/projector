@@ -1,12 +1,37 @@
+context("Word embeddings with fastrtext")
+
 library(fastrtext)
 
 model_test_path <- system.file("extdata",
                                "model_unsupervised_test.bin",
                                package = "fastrtext")
+
 model <- load_model(model_test_path)
 word_embeddings <- get_word_vectors(model, words = head(get_dictionary(model), 2e5))
 annoy_model <- get_annoy_model(word_embeddings, 5)
 
 selected_word <- "there"
-b <- retrieve_neighbors(text = selected_word, projection_type = "tsne", annoy_model = annoy_model, n = 1000)
 
+test_that("T-SNE", {
+  number_neighbors <- 1e3
+  b <- retrieve_neighbors(text = selected_word, projection_type = "tsne", annoy_model = annoy_model, n = number_neighbors)
+  expect_length(b, 3)
+  expect_equal(nrow(b), number_neighbors)
+})
+
+test_that("PCA", {
+  number_neighbors <- 1e3
+  b <- retrieve_neighbors(text = selected_word, projection_type = "pca", annoy_model = annoy_model, n = number_neighbors)
+  expect_length(b, 3)
+  expect_equal(nrow(b), number_neighbors)
+})
+
+test_that("plot", {
+  number_neighbors <- 1e3
+  b <- retrieve_neighbors(text = selected_word, projection_type = "pca", annoy_model = annoy_model, n = number_neighbors)
+  p <- plot_text(b, 3)
+  expect_equal(p$x$attrs[[1]]$type, "scatter")
+  expect_equal(p$x$attrs[[1]]$mode, "markers")
+  expect_length(p$x$attrs[[1]]$marker$size, number_neighbors)
+  expect_length(p$x$attrs[[1]]$marker$color, number_neighbors)
+})
