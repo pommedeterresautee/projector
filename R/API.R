@@ -139,7 +139,6 @@ retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k =
 plot_text <- function(coordinates, min_cluster_size = 5) {
   assert_that(is.count(min_cluster_size))
   selected_word <- coordinates$text[1]
-  print(selected_word)
   cl <- hdbscan(coordinates[, 1:2], minPts = min_cluster_size)
   number_cluster <- length(unique(cl$cluster))
   colors <- colorRampPalette(brewer.pal(min(11, number_cluster), "Paired"))(number_cluster)

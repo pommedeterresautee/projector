@@ -7,7 +7,7 @@ model_test_path <- system.file("extdata",
                                package = "fastrtext")
 
 model <- load_model(model_test_path)
-word_embeddings <- get_word_vectors(model, words = head(get_dictionary(model), 2e5))
+word_embeddings <- get_word_vectors(model, words = get_dictionary(model))
 annoy_model <- get_annoy_model(word_embeddings, 5)
 
 selected_word <- "there"
@@ -19,11 +19,20 @@ test_that("T-SNE", {
   expect_equal(nrow(b), number_neighbors)
 })
 
-test_that("PCA", {
+test_that("PCA - centered", {
   number_neighbors <- 1e3
-  b <- retrieve_neighbors(text = selected_word, projection_type = "pca", annoy_model = annoy_model, n = number_neighbors)
+  b <- retrieve_neighbors(text = selected_word, projection_type = "pca", annoy_model = annoy_model, n = number_neighbors, center_pivot = TRUE)
   expect_length(b, 3)
   expect_equal(nrow(b), number_neighbors)
+  expect_equal(b[1,]$x, 0)
+  expect_equal(b[1,]$y, 0)
+})
+
+test_that("PCA - not centered", {
+  number_neighbors <- 1e3
+  b <- retrieve_neighbors(text = selected_word, projection_type = "pca", annoy_model = annoy_model, n = number_neighbors, center_pivot = FALSE)
+  expect_false(b[1,]$x == 0)
+  expect_false(b[1,]$y == 0)
 })
 
 test_that("plot", {
