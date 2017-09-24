@@ -1,19 +1,22 @@
 #' Build Annoy model
 #'
-#' Annoy is used to retrieve the most similar vectors to a pivot one.
-#' This function builds the Annoy model.
-#' @param vectors [matrix] where each row is an observation
+#' [RcppAnnoy] model is used to retrieve the most similar vectors to a pivot one.
+#' This function builds the [RcppAnnoy] model.
+#' @param vectors [matrix] where each row is an observation. [rownames] should contain textual versions of the vectors.
 #' @param number_trees [integer] counting the number of trees to grow in Annoy (for neighboor search). More gives better results but is slower to compute.
 #' @importFrom RcppAnnoy AnnoyAngular
+#' @importFrom assertthat assert_that
 #' @import methods
 #' @export
-build_annoy_model <- function(vectors, number_trees) {
-  model <- new(AnnoyAngular, ncol(vectors))
+get_annoy_model <- function(vectors, number_trees) {
+  assert_that(length(rownames(vectors)) > 0)
+  annoy_model <- new(AnnoyAngular, ncol(vectors))
   for (i in seq(nrow(vectors))) {
-    model$addItem(i - 1, vectors[i,])
+    annoy_model$addItem(i - 1, vectors[i,])
   }
-  model$build(number_trees)
-  model
+  annoy_model$build(number_trees)
+  attr(annoy_model, "dict") <- rownames(vectors)
+  annoy_model
 }
 
 #' Retrieve the most closest vector representation
@@ -21,7 +24,7 @@ build_annoy_model <- function(vectors, number_trees) {
 #' Use Annoy to rapidly retrieve the `n` most closest representation of a text.
 #' @param word [character] containing the pivot word
 #' @param dict [character] containing all possible texts
-#' @param annoy_model Annoy model
+#' @param annoy_model [RcppAnnoy] model
 #' @param n number of elements to retrieve
 #' @param search_k number of nodes to search in (Annoy parameter). Higher is better and slower.
 #' @importFrom assertthat assert_that is.count
@@ -29,7 +32,6 @@ get_neighbors <- function(word, dict, annoy_model, n, search_k) {
   assert_that(isTRUE(word %in% dict))
   position <- which(word == dict)
   assert_that(is.count(position))
-  print(position)
   l <- annoy_model$getNNsByItemList(position - 1, n, search_k, TRUE)
   l$item <- l$item + 1
   l$text <- dict[l$item]
@@ -41,6 +43,7 @@ get_neighbors <- function(word, dict, annoy_model, n, search_k) {
 #' Rapid to compute but not always very meaningful.
 #'
 #' @param vectors [matrix] containing the `n` closest neighboor
+#' @keywords internal
 #' @importFrom stats prcomp
 get_coordinates_pca <- function(vectors) {
   pca <- prcomp(vectors, center = TRUE, scale. = TRUE)
@@ -50,12 +53,12 @@ get_coordinates_pca <- function(vectors) {
 #' Compute 2D coordinates using T-SNE
 #'
 #' Better results but slow.
-#'
 #' @param vectors [matrix] containing the `n` closest neighboor
 #' @param max_iter maximum number of epoch (for T-SNE learning)
 #' @param verbose print debug information
+#' @keywords internal
 #' @importFrom Rtsne Rtsne
-get_coordinates_tsne <- function(vectors, max_iter = 500, verbose = TRUE) {
+get_coordinates_tsne <- function(vectors, max_iter, verbose) {
   stop_lying_iter <- min(max_iter / 2, 250)
   tsne_model_1 <- Rtsne(vectors, check_duplicates = FALSE, pca = TRUE, perplexity = 30, theta = 0.5, dims = 2, verbose = verbose, max_iter = max_iter, stop_lying_iter = stop_lying_iter)
   data.frame(tsne_model_1$Y)
@@ -67,10 +70,14 @@ get_coordinates_tsne <- function(vectors, max_iter = 500, verbose = TRUE) {
 #'
 #' @param vectors [matrix] containing the `n` closest neighboor
 #' @param projection_type [character] defining the algorithm to use to compute the coordinates. `tsne` or `pca`
+#' @param max_iter maximum number of epoch (for T-SNE learning)
+#' @param verbose print debug information (for T-SNE learning)
+#' @importFrom assertthat assert_that
 #' @export
-get_coordinates <- function(vectors, projection_type) {
+get_coordinates <- function(vectors, projection_type, max_iter = 500, verbose = FALSE) {
+  assert_that(is.matrix(vectors))
   coordinates <- switch(projection_type,
-              tsne = get_coordinates_tsne(vectors = vectors),
+              tsne = get_coordinates_tsne(vectors, max_iter, verbose),
               pca = get_coordinates_pca(vectors = vectors))
 
   colnames(coordinates) <- c("x", "y")
@@ -79,7 +86,7 @@ get_coordinates <- function(vectors, projection_type) {
 }
 
 #' Center coordinates around the pivot vector
-#'
+#' @keywords internal
 #' @param coordinates [data.frame] containing coordinates to center. First position is the pivot.
 center_coordinates <- function(coordinates) {
   coordinates$x <- coordinates$x - coordinates[1,]$x
@@ -89,18 +96,26 @@ center_coordinates <- function(coordinates) {
 
 #' Retrieve a list of neighbor vectors
 #'
-#' Use [RcppAnnoy]
+#' Use [RcppAnnoy] to rapidly retrieve a list of vector neighbors
 #'
 #' @param text [character] containing the text related to the pivot vector
-#' @param embeddings [matrix] containing all possible vectors
 #' @param projection_type [character] defining the algorithm to use to compute the coordinates
-#' @param model [RcppAnnoy] model
+#' @param annoy_model [RcppAnnoy] model
 #' @param n number of elements to retrieve
 #' @param search_k number of nodes to search in (Annoy parameter). Higher is better and slower.
+#' @param ... additional parameters used in [get_coordinates]
 #' @export
-retrieve_neighbors <- function(text, embeddings, projection_type, model, n, search_k = min(max(10000, 10 * n), nrow(embeddings))) {
-    l <- get_neighbors(text, rownames(embeddings), model, n, search_k)
-    df <- get_coordinates(embeddings[l$item,], projection_type)
+retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k = max(10000, 10 * n), ...) {
+    dict <- attr(annoy_model, "dict")
+    search_k <- min(length(dict), search_k)
+    l <- get_neighbors(text, dict, annoy_model, n, search_k)
+    vectors <- list()
+    for (i in l$item) {
+      vectors[[i]] <- annoy_model$getItemsVector(i)
+    }
+    mat <- do.call(rbind, vectors)
+    rownames(mat) <- dict[l$item]
+    df <- get_coordinates(mat, projection_type, ...)
     center_coordinates(df)
 }
 
@@ -114,13 +129,16 @@ retrieve_neighbors <- function(text, embeddings, projection_type, model, n, sear
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom grDevices colorRampPalette
 #' @importFrom plotly plot_ly
+#' @importFrom assertthat assert_that is.count
 #' @export
 plot_text <- function(coordinates, min_cluster_size = 5) {
+  assert_that(is.count(min_cluster_size))
   selected_word <- coordinates$text[1]
+  print(selected_word)
   cl <- hdbscan(coordinates[, 1:2], minPts = min_cluster_size)
   number_cluster <- length(unique(cl$cluster))
   colors <- colorRampPalette(brewer.pal(min(11, number_cluster), "Paired"))(number_cluster)
-  coordinates$colors <- colors[cl$cluster + 1]
-  plot_ly(coordinates, x = ~x, y = ~y, name = "default", text = ~text, type = "scatter", mode = "markers", marker = list(size = ifelse(coordinates$text == selected_word, 30, 10), color = ~colors))
+  colors <- colors[cl$cluster + 1]
+  plot_ly(coordinates, x = ~x, y = ~y, name = "default", text = ~text, type = "scatter", mode = "markers", marker = list(size = ifelse(coordinates$text == selected_word, 30, 10), color = colors))
 }
 

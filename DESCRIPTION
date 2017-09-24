@@ -15,7 +15,8 @@ Imports: methods,
   plotly,
   assertthat
 Suggests: knitr,
-  testthat
+  testthat,
+  fastrtext
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
