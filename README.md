@@ -1,7 +1,3 @@
----
-output: github_document
----
-
 ![projectoR](https://github.com/pommedeterresautee/projector/raw/master/tools/logo.png) 
 
 [![Build Status](https://travis-ci.org/pommedeterresautee/projector.svg?branch=master)](https://travis-ci.org/pommedeterresautee/projector)
@@ -9,17 +5,17 @@ output: github_document
 [![Coverage Status](https://img.shields.io/codecov/c/github/pommedeterresautee/projector/master.svg)](https://codecov.io/github/pommedeterresautee/projector?branch=master)
 [![Follow](https://img.shields.io/twitter/follow/pommedeterre33.svg?style=social)](https://twitter.com/intent/follow?screen_name=pommedeterre33)
 
-*Project text dense vector representations on a 2D plan to better understand neural models applied to NLP.*
+*Project dense vector representations of texts on a 2D plan to better understand neural models applied to NLP.*
 
 Introduction
 ------------
 
-Since the famous [word2vec](https://en.wikipedia.org/wiki/Word2vec), embeddings are everywhere in [NLP](https://en.wikipedia.org/wiki/Natural_language_processing) (and other areas like [IR](https://en.wikipedia.org/wiki/Information_retrieval)).  
-The main idea is to represent texts (made of characters, words, sentences, ...) as `numeric` vectors.  
-The technic works very well and provides some abilities unreachable with the classic [BoW](https://en.wikipedia.org/wiki/Bag-of-words_model) approach.  
-However, embeddings (e.g. vector representations) are difficult to understand, analyze (and debug) for humans because they are made of much more that just 3 dimensions.  
+Since the famous [word2vec](https://en.wikipedia.org/wiki/Word2vec), embeddings are everywhere in [NLP](https://en.wikipedia.org/wiki/Natural_language_processing) (and other close areas like [IR](https://en.wikipedia.org/wiki/Information_retrieval)).  
+The main idea behind embeddings is to represent texts (made of characters, words, sentences, or even larger blocks) as `numeric` vectors.  
+This works very well and provides some abilities unreachable with the classic [BoW](https://en.wikipedia.org/wiki/Bag-of-words_model) approach.  
+However, embeddings (e.g. vector representations) are difficult to understand, analyze (and debug) for humans because they are made of much more than just 3 dimensions.  
 
-**One well known way to get a sense of understanding is to to project embeddings on a 2D scatter plot and visualize the distances between texts, check the clusters and so on...**  
+**One well known way to get a sense of understanding of embeddings is to to project them on a 2D scatter plot and visualize the distances between texts, search for clusters and so on...**  
 This is the very purpose of this package!
 
 2 algorithms can be used for projection:
