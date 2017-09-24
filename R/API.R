@@ -2,6 +2,7 @@
 #'
 #' [RcppAnnoy] model is used to retrieve the most similar vectors to a pivot one.
 #' This function builds the [RcppAnnoy] model.
+#'
 #' @param vectors [matrix] where each row is an observation. [rownames] should contain textual versions of the vectors.
 #' @param number_trees [integer] counting the number of trees to grow in Annoy (for neighboor search). More gives better results but is slower to compute.
 #' @importFrom RcppAnnoy AnnoyAngular
@@ -22,6 +23,7 @@ get_annoy_model <- function(vectors, number_trees) {
 #' Retrieve the most closest vector representation
 #'
 #' Use Annoy to rapidly retrieve the `n` most closest representation of a text.
+#'
 #' @param word [character] containing the pivot word
 #' @param dict [character] containing all possible texts
 #' @param annoy_model [RcppAnnoy] model
@@ -61,15 +63,15 @@ get_coordinates_pca <- function(vectors) {
 #' @param verbose print debug information
 #' @keywords internal
 #' @importFrom Rtsne Rtsne
-get_coordinates_tsne <- function(vectors, max_iter, verbose) {
+get_coordinates_tsne <- function(vectors, max_iter, perplexity, verbose) {
   stop_lying_iter <- min(max_iter / 2, 250)
-  tsne_model_1 <- Rtsne(vectors, check_duplicates = FALSE, pca = TRUE, perplexity = 30, theta = 0.5, dims = 2, verbose = verbose, max_iter = max_iter, stop_lying_iter = stop_lying_iter)
+  tsne_model_1 <- Rtsne(vectors, check_duplicates = FALSE, pca = TRUE, max_iter = max_iter, perplexity = perplexity, theta = 0.5, dims = 2, verbose = verbose, stop_lying_iter = stop_lying_iter)
   data.frame(tsne_model_1$Y)
 }
 
 #' Compute 2D coordinates of vectors
 #'
-#' Plot function
+#' Transform original vectors in 2D coordinates applying `PCA` or `T-SNE`.
 #'
 #' @param vectors [matrix] containing the `n` closest neighboor
 #' @param projection_type [character] defining the algorithm to use to compute the coordinates. (`tsne` or `pca`)
@@ -77,12 +79,12 @@ get_coordinates_tsne <- function(vectors, max_iter, verbose) {
 #' @param verbose print debug information (for T-SNE learning)
 #' @importFrom assertthat assert_that is.string
 #' @export
-get_coordinates <- function(vectors, projection_type, max_iter = 500, verbose = FALSE) {
+get_coordinates <- function(vectors, projection_type, max_iter = 500, perplexity = 30, verbose = FALSE) {
   assert_that(is.matrix(vectors))
   assert_that(is.string(projection_type))
   assert_that(projection_type %in% c("pca", "tsne"))
   coordinates <- switch(projection_type,
-              tsne = get_coordinates_tsne(vectors, max_iter, verbose),
+              tsne = get_coordinates_tsne(vectors, max_iter, perplexity, verbose),
               pca = get_coordinates_pca(vectors = vectors))
 
   colnames(coordinates) <- c("x", "y")
@@ -146,6 +148,16 @@ plot_text <- function(coordinates, min_cluster_size = 5) {
   number_cluster <- length(unique(cl$cluster))
   colors <- colorRampPalette(brewer.pal(min(11, number_cluster), "Paired"))(number_cluster)
   colors <- colors[cl$cluster + 1]
-  plot_ly(coordinates, x = ~x, y = ~y, name = "default", text = ~text, type = "scatter", mode = "markers", marker = list(size = ifelse(coordinates$text == selected_word, 30, 10), color = colors))
+
+  p <- plot_ly(coordinates, x = ~x, y = ~y, name = "default", text = ~text, type = "scatter", mode = "markers", marker = list(size = ifelse(coordinates$text == selected_word, 30, 10), color = colors))
+
+  remove_axis_info <- list(
+    title = "",
+    showline = FALSE,
+    showticklabels = FALSE,
+    showgrid = FALSE
+  )
+
+  layout(p, xaxis = remove_axis_info, yaxis = remove_axis_info)
 }
 

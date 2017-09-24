@@ -4,7 +4,7 @@
 \alias{get_coordinates_tsne}
 \title{Compute 2D coordinates using T-SNE}
 \usage{
-get_coordinates_tsne(vectors, max_iter, verbose)
+get_coordinates_tsne(vectors, max_iter, perplexity, verbose)
 }
 \arguments{
 \item{vectors}{\link{matrix} containing the \code{n} closest neighboor}

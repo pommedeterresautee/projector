@@ -1,5 +1,6 @@
 library(projector)
 library(fastrtext)
+set.seed(42)
 
 model_test_path <- system.file("extdata",
                                "model_unsupervised_test.bin",
@@ -10,7 +11,7 @@ word_embeddings <- get_word_vectors(model, words = head(get_dictionary(model), 2
 
 annoy_model <- get_annoy_model(word_embeddings, 5)
 
-selected_word <- "there"
+selected_word <- "out"
 df <- retrieve_neighbors(text = selected_word, projection_type = "tsne", annoy_model = annoy_model, n = 1000)
 
 plot_text(df, 3)

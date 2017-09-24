@@ -68,7 +68,7 @@ word_embeddings <- get_word_vectors(model, words = head(get_dictionary(model), 5
 annoy_model <- get_annoy_model(word_embeddings, 5)
 
 # pivot_word <- "friendship" # for Wikipedia viz
-pivot_word <- "experience"
+pivot_word <- "out"
 df <- retrieve_neighbors(text = pivot_word, projection_type = "tsne", annoy_model = annoy_model, n = 500)
 plot_text(coordinates = df, min_cluster_size = 3)
 ```

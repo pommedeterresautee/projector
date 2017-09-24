@@ -4,7 +4,8 @@
 \alias{get_coordinates}
 \title{Compute 2D coordinates of vectors}
 \usage{
-get_coordinates(vectors, projection_type, max_iter = 500, verbose = FALSE)
+get_coordinates(vectors, projection_type, max_iter = 500, perplexity = 30,
+  verbose = FALSE)
 }
 \arguments{
 \item{vectors}{\link{matrix} containing the \code{n} closest neighboor}
@@ -16,5 +17,5 @@ get_coordinates(vectors, projection_type, max_iter = 500, verbose = FALSE)
 \item{verbose}{print debug information (for T-SNE learning)}
 }
 \description{
-Plot function
+Transform original vectors in 2D coordinates applying \code{PCA} or \code{T-SNE}.
 }
