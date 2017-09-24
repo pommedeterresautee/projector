@@ -15,11 +15,12 @@ Imports: methods,
   RColorBrewer,
   dbscan,
   plotly,
-  assertthat
+  assertthat,
+  shiny
 Suggests: knitr,
   testthat,
   fastrtext,
-    covr
+  covr
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

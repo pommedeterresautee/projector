@@ -12,6 +12,12 @@ annoy_model <- get_annoy_model(word_embeddings, 5)
 
 selected_word <- "there"
 
+test_that("RcppAnnoy model properties", {
+  expect_true(assertthat::has_attr(annoy_model, "dict"))
+  expect_equal(annoy_model$getNItems(), length(annoy_model@dict))
+  expect_gt(annoy_model$getNItems(), 0)
+})
+
 test_that("T-SNE", {
   number_neighbors <- 1e3
   b <- retrieve_neighbors(text = selected_word, projection_type = "tsne", annoy_model = annoy_model, n = number_neighbors)

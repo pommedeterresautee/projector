@@ -111,7 +111,7 @@ center_coordinates <- function(coordinates) {
 #' @export
 retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k = max(10000, 10 * n), center_pivot = TRUE, ...) {
     assert_that(is.flag(center_pivot))
-    dict <- attr(annoy_model, "dict")
+    dict <- annoy_model@dict
     search_k <- min(length(dict), search_k)
     l <- get_neighbors(text, dict, annoy_model, n, search_k)
     vectors <- list()
