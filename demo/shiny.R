@@ -1,6 +1,4 @@
-require(shiny)
-require(projector)
-library(plotly)
+library(projector)
 library(fastrtext)
 
 model_test_path <- system.file("extdata",

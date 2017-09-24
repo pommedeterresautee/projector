@@ -27,9 +27,12 @@ get_annoy_model <- function(vectors, number_trees) {
 #' @param annoy_model [RcppAnnoy] model
 #' @param n number of elements to retrieve
 #' @param search_k number of nodes to search in (Annoy parameter). Higher is better and slower.
-#' @importFrom assertthat assert_that is.count
+#' @importFrom assertthat assert_that is.count is.string
 get_neighbors <- function(word, dict, annoy_model, n, search_k) {
-  assert_that(isTRUE(word %in% dict))
+  assert_that(is.string(word))
+  assert_that(is.count(n))
+  assert_that(is.count(search_k))
+  assert_that(isTRUE(word %in% dict), msg = paste("Text not included in provided embeddings:", word))
   position <- which(word == dict)
   assert_that(is.count(position))
   l <- annoy_model$getNNsByItemList(position - 1, n, search_k, TRUE)

@@ -15,7 +15,7 @@ interactive_embedding_exploration <- function(annoy_model){
                   hr(),
                   sidebarPanel(
                     textInput("pivot_text", label = NULL, placeholder = "Pivot text"),
-                    sliderInput("number_neighbors", label = h5("Number of neighbors"), min = 0, max =  annoy_model$getNItems(), value = 1000, ticks = TRUE, step = 100),
+                    sliderInput("number_neighbors", label = h5("Number of neighbors (more == slower)"), min = 0, max =  annoy_model$getNItems(), value = 1000, ticks = TRUE, step = 100),
                     numericInput("min_size_cluster", label = h5("Minimum size of a cluster"), value = 3, step = 1),
                     selectInput("projection_algorithm", label = h5("Projection algorithm"), choices = c("PCA (rapid)" = "pca", "T-SNE (better, slower)" = "tsne"), selected = "tsne"),
                     actionButton("plot_button", "Plot!")
