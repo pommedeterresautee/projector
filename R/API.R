@@ -49,10 +49,13 @@ get_neighbors <- function(word, dict, annoy_model, n, search_k) {
 #' Data are centered and scaled.
 #'
 #' @param vectors [matrix] containing the `n` closest neighboor
+#' @param transformations transformations applied to vectors before computing PCA
 #' @keywords internal
 #' @importFrom stats prcomp
-get_coordinates_pca <- function(vectors) {
-  pca <- prcomp(vectors, center = TRUE, scale. = TRUE, rank. = 2)
+get_coordinates_pca <- function(vectors, transformations = c("center", "scaled"), ...) {
+  scale <- "center" %in% transformations
+  center <- "scaled" %in% transformations
+  pca <- prcomp(vectors, center = center, scale. = scale)
   data.frame(pca$x[,1:2])
 }
 
@@ -65,7 +68,7 @@ get_coordinates_pca <- function(vectors) {
 #' @param verbose print debug information (for T-SNE learning)
 #' @keywords internal
 #' @importFrom Rtsne Rtsne
-get_coordinates_tsne <- function(vectors, max_iter = 500, perplexity = 30, verbose = FALSE) {
+get_coordinates_tsne <- function(vectors, max_iter = 500, perplexity = 30, verbose = FALSE, ...) {
   stop_lying_iter <- min(max_iter / 2, 250)
   tsne_model_1 <- Rtsne(vectors, check_duplicates = FALSE, pca = TRUE, max_iter = max_iter, perplexity = perplexity, theta = 0.5, dims = 2, verbose = verbose, stop_lying_iter = stop_lying_iter)
   data.frame(tsne_model_1$Y)
@@ -86,7 +89,7 @@ get_coordinates <- function(vectors, projection_type, ...) {
   assert_that(projection_type %in% c("pca", "tsne"))
   coordinates <- switch(projection_type,
               tsne = get_coordinates_tsne(vectors, ...),
-              pca = get_coordinates_pca(vectors))
+              pca = get_coordinates_pca(vectors, ...))
 
   colnames(coordinates) <- c("x", "y")
   coordinates$text <- rownames(vectors)

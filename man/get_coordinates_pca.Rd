@@ -4,10 +4,12 @@
 \alias{get_coordinates_pca}
 \title{Compute 2D coordinates using PCA}
 \usage{
-get_coordinates_pca(vectors)
+get_coordinates_pca(vectors, transformations = c("center", "scaled"), ...)
 }
 \arguments{
 \item{vectors}{\link{matrix} containing the \code{n} closest neighboor}
+
+\item{transformations}{transformations applied to vectors before computing PCA}
 }
 \description{
 Rapid to compute but not always very meaningful.
