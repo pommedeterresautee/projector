@@ -46,12 +46,13 @@ get_neighbors <- function(word, dict, annoy_model, n, search_k) {
 #' Compute 2D coordinates using PCA
 #'
 #' Rapid to compute but not always very meaningful.
+#' Data are centered and scaled.
 #'
 #' @param vectors [matrix] containing the `n` closest neighboor
 #' @keywords internal
 #' @importFrom stats prcomp
 get_coordinates_pca <- function(vectors) {
-  pca <- prcomp(vectors, center = TRUE, scale. = TRUE)
+  pca <- prcomp(vectors, center = TRUE, scale. = TRUE, rank. = 2)
   data.frame(pca$x[,1:2])
 }
 
@@ -60,10 +61,11 @@ get_coordinates_pca <- function(vectors) {
 #' Better results but slow.
 #' @param vectors [matrix] containing the `n` closest neighboor
 #' @param max_iter maximum number of epoch (for T-SNE learning)
-#' @param verbose print debug information
+#' @param perplexity how to balance attention between local and global aspects of data
+#' @param verbose print debug information (for T-SNE learning)
 #' @keywords internal
 #' @importFrom Rtsne Rtsne
-get_coordinates_tsne <- function(vectors, max_iter, perplexity, verbose) {
+get_coordinates_tsne <- function(vectors, max_iter = 500, perplexity = 30, verbose = FALSE) {
   stop_lying_iter <- min(max_iter / 2, 250)
   tsne_model_1 <- Rtsne(vectors, check_duplicates = FALSE, pca = TRUE, max_iter = max_iter, perplexity = perplexity, theta = 0.5, dims = 2, verbose = verbose, stop_lying_iter = stop_lying_iter)
   data.frame(tsne_model_1$Y)
@@ -71,22 +73,20 @@ get_coordinates_tsne <- function(vectors, max_iter, perplexity, verbose) {
 
 #' Compute 2D coordinates of vectors
 #'
-#' Transform original vectors in 2D coordinates applying `PCA` or `T-SNE`.
+#' Transform original vectors in 2D coordinates applying [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis) or [T-SNE](https://distill.pub/2016/misread-tsne/).
 #'
 #' @param vectors [matrix] containing the `n` closest neighboor
 #' @param projection_type [character] defining the algorithm to use to compute the coordinates. (`tsne` or `pca`)
-#' @param max_iter maximum number of epoch (for T-SNE learning)
-#' @param perplexity how to balance attention between local and global aspects of data
-#' @param verbose print debug information (for T-SNE learning)
+#' @param ... parameters pass to projection algorithm (`max_iter`, `perplexity`, `verbose`)
 #' @importFrom assertthat assert_that is.string
 #' @export
-get_coordinates <- function(vectors, projection_type, max_iter = 500, perplexity = 30, verbose = FALSE) {
+get_coordinates <- function(vectors, projection_type, ...) {
   assert_that(is.matrix(vectors))
   assert_that(is.string(projection_type))
   assert_that(projection_type %in% c("pca", "tsne"))
   coordinates <- switch(projection_type,
-              tsne = get_coordinates_tsne(vectors, max_iter, perplexity, verbose),
-              pca = get_coordinates_pca(vectors = vectors))
+              tsne = get_coordinates_tsne(vectors, ...),
+              pca = get_coordinates_pca(vectors))
 
   colnames(coordinates) <- c("x", "y")
   coordinates$text <- rownames(vectors)

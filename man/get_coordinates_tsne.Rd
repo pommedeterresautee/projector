@@ -4,14 +4,17 @@
 \alias{get_coordinates_tsne}
 \title{Compute 2D coordinates using T-SNE}
 \usage{
-get_coordinates_tsne(vectors, max_iter, perplexity, verbose)
+get_coordinates_tsne(vectors, max_iter = 500, perplexity = 30,
+  verbose = FALSE)
 }
 \arguments{
 \item{vectors}{\link{matrix} containing the \code{n} closest neighboor}
 
 \item{max_iter}{maximum number of epoch (for T-SNE learning)}
 
-\item{verbose}{print debug information}
+\item{perplexity}{how to balance attention between local and global aspects of data}
+
+\item{verbose}{print debug information (for T-SNE learning)}
 }
 \description{
 Better results but slow.

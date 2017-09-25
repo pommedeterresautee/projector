@@ -11,5 +11,6 @@ get_coordinates_pca(vectors)
 }
 \description{
 Rapid to compute but not always very meaningful.
+Data are centered and scaled.
 }
 \keyword{internal}

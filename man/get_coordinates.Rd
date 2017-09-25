@@ -4,20 +4,15 @@
 \alias{get_coordinates}
 \title{Compute 2D coordinates of vectors}
 \usage{
-get_coordinates(vectors, projection_type, max_iter = 500, perplexity = 30,
-  verbose = FALSE)
+get_coordinates(vectors, projection_type, ...)
 }
 \arguments{
 \item{vectors}{\link{matrix} containing the \code{n} closest neighboor}
 
 \item{projection_type}{\link{character} defining the algorithm to use to compute the coordinates. (\code{tsne} or \code{pca})}
 
-\item{max_iter}{maximum number of epoch (for T-SNE learning)}
-
-\item{perplexity}{how to balance attention between local and global aspects of data}
-
-\item{verbose}{print debug information (for T-SNE learning)}
+\item{...}{parameters pass to projection algorithm (\code{max_iter}, \code{perplexity}, \code{verbose})}
 }
 \description{
-Transform original vectors in 2D coordinates applying \code{PCA} or \code{T-SNE}.
+Transform original vectors in 2D coordinates applying \href{https://en.wikipedia.org/wiki/Principal_component_analysis}{PCA} or \href{https://distill.pub/2016/misread-tsne/}{T-SNE}.
 }
