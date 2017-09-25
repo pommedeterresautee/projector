@@ -14,3 +14,11 @@ Shiny application to interactively play with embeddings.
 User provides a pivot word and the n most similar word
 are projected on a scatter plot.
 }
+\details{
+For large list of texts, the autocomplete can be slow.
+
+Increasing the number of neighbors can make things very slow, in particular with T-SNE approach.
+1000 neighbors is usually a good value.
+
+Colors in the scatter plot represents clusters found by \link{dbscan}.
+}

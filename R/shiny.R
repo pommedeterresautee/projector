@@ -4,8 +4,15 @@
 #' User provides a pivot word and the n most similar word
 #' are projected on a scatter plot.
 #'
+#' For large list of texts, the autocomplete can be slow.
+#'
+#' Increasing the number of neighbors can make things very slow, in particular with T-SNE approach.
+#' 1000 neighbors is usually a good value.
+#'
+#' Colors in the scatter plot represents clusters found by [dbscan].
+#'
 #' @param annoy_model [RcppAnnoy] model generated with [get_annoy_model]
-#' @importFrom shiny fluidPage textInput shinyApp sliderInput mainPanel titlePanel hr need validate h1 h2 h3 h4 h5 h6 numericInput selectInput sidebarPanel actionButton isolate observeEvent conditionalPanel
+#' @importFrom shiny fluidPage textInput shinyApp sliderInput mainPanel titlePanel hr need validate h1 h2 h3 h4 h5 h6 numericInput selectInput sidebarPanel actionButton isolate observeEvent conditionalPanel selectizeInput updateSelectizeInput
 #' @importFrom plotly renderPlotly plotlyOutput
 #' @export
 interactive_embedding_exploration <- function(annoy_model){
@@ -14,8 +21,8 @@ interactive_embedding_exploration <- function(annoy_model){
                   titlePanel(title = "Text projectoR"),
                   hr(),
                   sidebarPanel(
-                    textInput("pivot_text", label = NULL, placeholder = "Pivot text"),
-                    sliderInput("number_neighbors", label = h5("Number of neighbors (more == slower)"), min = 0, max =  annoy_model$getNItems(), value = 1000, ticks = TRUE, step = 100),
+                    selectizeInput("pivot_text", label = "Pivot text", choices = NULL),
+                    sliderInput("number_neighbors", label = h5("Number of neighbors"), min = 0, max =  annoy_model$getNItems(), value = 1000, ticks = TRUE, step = 100),
                     numericInput("min_size_cluster", label = h5("Minimum size of a cluster"), value = 3, step = 1),
                     selectInput("projection_algorithm", label = h5("Projection algorithm"), choices = c("PCA (rapid)" = "pca", "T-SNE (better, slower)" = "tsne"), selected = "tsne"),
                     conditionalPanel(condition = "input.projection_algorithm == 'tsne'",
@@ -28,10 +35,12 @@ interactive_embedding_exploration <- function(annoy_model){
                     plotlyOutput("vector_neighbor_plot")
                   ))
 
-  server <- function(input, output) {
+  server <- function(input, output, session) {
+    # for the autocomplete in selectizeInput
+    updateSelectizeInput(session = session, inputId = 'pivot_text', choices = annoy_model@dict, server = TRUE)
+
     observeEvent(input$plot_button, {
       output$vector_neighbor_plot <- renderPlotly({
-
         isolate({
           validate(
             need(input$pivot_text != "", message = "Please, enter a word"),
@@ -41,7 +50,6 @@ interactive_embedding_exploration <- function(annoy_model){
           plot_text(df, input$min_size_cluster)
         })
       })
-
     })
   }
 
