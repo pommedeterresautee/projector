@@ -6,8 +6,10 @@
 #'
 #' For large list of texts, the autocomplete can be slow.
 #'
-#' Increasing the number of neighbors can make things very slow, in particular with T-SNE approach.
-#' 1000 neighbors is usually a good value.
+#' Increasing the number of neighbors can make things very slow,
+#' in particular with T-SNE approach.
+#' 500 neighbors is usually a good value to have an understanding
+#' of the neighborhood of a vector.
 #'
 #' Colors in the scatter plot represents clusters found by [dbscan].
 #'
@@ -25,11 +27,11 @@ interactive_embedding_exploration <- function(annoy_model){
                   hr(),
                   sidebarPanel(
                     selectizeInput("pivot_text", label = h4("Pivot text"), choices = NULL),
-                    sliderInput("number_neighbors", label = h5("Number of neighbors"), min = 0, max =  annoy_model$getNItems(), value = 1000, ticks = TRUE, step = 100),
+                    sliderInput("number_neighbors", label = h5("Number of neighbors"), min = 0, max =  annoy_model$getNItems(), value = 500, ticks = TRUE, step = 100),
                     numericInput("min_size_cluster", label = h5("Minimum size of a cluster"), value = 3, step = 1),
                     selectInput("projection_algorithm", label = h5("Projection algorithm"), choices = c("T-SNE (better, slower)" = "tsne", "PCA (rapid)" = "pca"), selected = "tsne"),
                     conditionalPanel(condition = "input.projection_algorithm == 'tsne'",
-                      numericInput("epochs", label = h5("Number of epochs to train T-SNE"), value = 500, step = 10),
+                      numericInput("epochs", label = h5("Epochs"), value = 500, step = 10),
                       numericInput("perplexity", label = h5("Perplexity"), value = 30, step = 5, min = 1, max = 50)
                     ),
                     conditionalPanel(condition = "input.projection_algorithm == 'pca'",
@@ -38,7 +40,7 @@ interactive_embedding_exploration <- function(annoy_model){
                     actionButton("plot_button", "Plot!", class = "btn-primary")
                   ),
                   mainPanel(
-                    div(id = "do_page", h1(icon("ban", "fa-5x"))),
+                    div(id = "div_do_something_message", h1(icon("ban", "fa-5x"))),
                     hidden(div(id = "div_loading_message", h1("Computing..."))),
                     div(id = "div_plot", plotlyOutput("vector_neighbor_plot"))
                   ))
@@ -48,15 +50,17 @@ interactive_embedding_exploration <- function(annoy_model){
     updateSelectizeInput(session = session, inputId = 'pivot_text', choices = annoy_model@dict, server = TRUE)
 
     observeEvent(input$plot_button, {
-      hideElement("do_page")
+      hideElement("div_do_something_message")
       output$vector_neighbor_plot <- renderPlotly({
         isolate({
+          # display waiting message
           hideElement("div_plot")
           showElement("div_loading_message", animType = "fade", anim = TRUE, time = 0.8)
           validate(
             need(input$pivot_text != "", message = "Please, choose a text.")
           )
           df <- retrieve_neighbors(text = input$pivot_text, projection_type = input$projection_algorithm, annoy_model = annoy_model, n =  input$number_neighbors, max_iter = input$epochs, perplexity = input$perplexity, transformations = input$pca_transformation)
+          # hide waiting message and display plot
           hideElement("div_loading_message")
           showElement("div_plot", animType = "fade", anim = TRUE, time = 0.8)
           plot_text(df, input$min_size_cluster)

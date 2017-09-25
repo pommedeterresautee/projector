@@ -162,6 +162,8 @@ plot_text <- function(coordinates, min_cluster_size = 5) {
     showgrid = FALSE
   )
 
-  layout(p, xaxis = remove_axis_info, yaxis = remove_axis_info)
+  p <- layout(p, xaxis = remove_axis_info, yaxis = remove_axis_info)
+  p$elementId <- NULL # remove a stupid warning
+  p
 }
 

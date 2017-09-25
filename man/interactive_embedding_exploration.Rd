@@ -17,8 +17,10 @@ are projected on a scatter plot.
 \details{
 For large list of texts, the autocomplete can be slow.
 
-Increasing the number of neighbors can make things very slow, in particular with T-SNE approach.
-1000 neighbors is usually a good value.
+Increasing the number of neighbors can make things very slow,
+in particular with T-SNE approach.
+500 neighbors is usually a good value to have an understanding
+of the neighborhood of a vector.
 
 Colors in the scatter plot represents clusters found by \link{dbscan}.
 }
