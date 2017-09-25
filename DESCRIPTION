@@ -17,11 +17,13 @@ Imports: methods,
   plotly,
   assertthat,
   shiny,
-  shinythemes
+  shinythemes,
+  shinyjs
 Suggests: knitr,
   testthat,
   fastrtext,
   covr
+Remotes: git::https://github.com/eddelbuettel/rcppannoy
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
