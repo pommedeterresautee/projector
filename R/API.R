@@ -76,6 +76,7 @@ get_coordinates_tsne <- function(vectors, max_iter, perplexity, verbose) {
 #' @param vectors [matrix] containing the `n` closest neighboor
 #' @param projection_type [character] defining the algorithm to use to compute the coordinates. (`tsne` or `pca`)
 #' @param max_iter maximum number of epoch (for T-SNE learning)
+#' @param perplexity how to balance attention between local and global aspects of data
 #' @param verbose print debug information (for T-SNE learning)
 #' @importFrom assertthat assert_that is.string
 #' @export
@@ -138,7 +139,7 @@ retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k =
 #' @importFrom dbscan hdbscan
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom grDevices colorRampPalette
-#' @importFrom plotly plot_ly
+#' @importFrom plotly plot_ly layout
 #' @importFrom assertthat assert_that is.count
 #' @export
 plot_text <- function(coordinates, min_cluster_size = 5) {

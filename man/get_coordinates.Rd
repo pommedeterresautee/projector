@@ -14,6 +14,8 @@ get_coordinates(vectors, projection_type, max_iter = 500, perplexity = 30,
 
 \item{max_iter}{maximum number of epoch (for T-SNE learning)}
 
+\item{perplexity}{how to balance attention between local and global aspects of data}
+
 \item{verbose}{print debug information (for T-SNE learning)}
 }
 \description{
