@@ -150,7 +150,7 @@ plot_text <- function(coordinates, min_cluster_size = 5) {
   colors <- colorRampPalette(brewer.pal(min(11, number_cluster), "Paired"))(number_cluster)
   colors <- colors[cl$cluster + 1]
 
-  p <- plot_ly(coordinates, x = ~x, y = ~y, name = "default", text = ~text, type = "scatter", mode = "markers", marker = list(size = ifelse(coordinates$text == selected_word, 30, 10), color = colors))
+  p <- plot_ly(coordinates, x = ~x, y = ~y, name = "default", text = ~text, hoverinfo = "text", type = "scatter", mode = "markers", marker = list(size = ifelse(coordinates$text == selected_word, 30, 10), color = colors))
 
   remove_axis_info <- list(
     title = "",
