@@ -7,6 +7,8 @@
 
 *Project dense vector representations of texts on a 2D plan to better understand neural models applied to NLP.*
 
+![VizProjector1](https://github.com/pommedeterresautee/projector/raw/master/tools/viz1.gif) 
+
 Introduction
 ------------
 
