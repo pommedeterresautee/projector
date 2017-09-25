@@ -14,11 +14,13 @@
 #' @param annoy_model [RcppAnnoy] model generated with [get_annoy_model]
 #' @importFrom shiny fluidPage textInput shinyApp sliderInput mainPanel titlePanel hr need validate h1 h2 h3 h4 h5 h6 numericInput selectInput sidebarPanel actionButton isolate observeEvent conditionalPanel selectizeInput updateSelectizeInput checkboxGroupInput
 #' @importFrom plotly renderPlotly plotlyOutput
+#' @importFrom shinythemes shinytheme
 #' @export
 interactive_embedding_exploration <- function(annoy_model){
 
   ui <- fluidPage(title = "projectoR",
-                  titlePanel(title = "Text projectoR"),
+                  theme = shinytheme("superhero"),
+                  titlePanel(title = "projectoR"),
                   hr(),
                   sidebarPanel(
                     selectizeInput("pivot_text", label = "Pivot text", choices = NULL),
@@ -32,7 +34,7 @@ interactive_embedding_exploration <- function(annoy_model){
                     conditionalPanel(condition = "input.projection_algorithm == 'pca'",
                                      checkboxGroupInput(inputId = "pca_transformation", label = h5("Transformations"), choices = c("center", "scaled"), selected = c("center", "scaled"))
                     ),
-                    actionButton("plot_button", "Plot!")
+                    actionButton("plot_button", "Plot!", class = "btn-primary")
                   ),
                   mainPanel(
                     plotlyOutput("vector_neighbor_plot")

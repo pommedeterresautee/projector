@@ -16,7 +16,8 @@ Imports: methods,
   dbscan,
   plotly,
   assertthat,
-  shiny
+  shiny,
+  shinythemes
 Suggests: knitr,
   testthat,
   fastrtext,
