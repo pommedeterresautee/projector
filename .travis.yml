@@ -3,7 +3,6 @@
 language: R
 sudo: false
 cache: packages
-r_github_packages: eddelbuettel/rcppannoy
 
 after_success:
   - Rscript -e 'covr::codecov()'

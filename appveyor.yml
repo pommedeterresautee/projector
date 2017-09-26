@@ -21,8 +21,6 @@ cache:
 
 build_script:
   - travis-tool.sh install_deps
-  - travis-tool.sh install_github hadley/devtools
-  - travis-tool.sh install_github eddelbuettel/rcppannoy
 
 test_script:
   - travis-tool.sh run_tests
