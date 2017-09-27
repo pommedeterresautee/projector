@@ -10,7 +10,7 @@ retrieve_neighbors(text, projection_type, annoy_model, n,
 \arguments{
 \item{text}{\link{character} containing the text related to the pivot vector}
 
-\item{projection_type}{\link{character} defining the algorithm to use to compute the coordinates}
+\item{projection_type}{\link{character} defining the algorithm to use to compute the coordinates. (\code{tsne} or \code{pca})}
 
 \item{annoy_model}{\link{RcppAnnoy} model}
 
@@ -20,8 +20,38 @@ retrieve_neighbors(text, projection_type, annoy_model, n,
 
 \item{center_pivot}{put pivot text in the middle of the graph}
 
-\item{...}{additional parameters used in \link{get_coordinates}}
+\item{...}{parameters passed to projection algorithm (\code{max_iter}, \code{perplexity}, \code{verbose}, \code{transformations})}
 }
 \description{
-Use \link{RcppAnnoy} to rapidly retrieve a list of vector neighbors
+Use \link{RcppAnnoy} to rapidly retrieve a list of vector neighbors.
+}
+\details{
+Transform original vectors in 2D coordinates applying either:
+\itemize{
+\item \href{https://en.wikipedia.org/wiki/Principal_component_analysis}{PCA}
+\item \href{https://distill.pub/2016/misread-tsne/}{T-SNE}.
+}
+}
+\examples{
+\dontrun{
+# This example should be run with a higher quality model
+# than the one embedded in fastrtext
+library(projector)
+library(fastrtext)
+
+model_test_path <- system.file("extdata",
+                               "model_unsupervised_test.bin",
+                               package = "fastrtext")
+model <- load_model(model_test_path)
+word_embeddings <- get_word_vectors(model,
+                                    words = head(get_dictionary(model), 2e5))
+
+annoy_model <- get_annoy_model(word_embeddings, 5)
+
+selected_word <- "out"
+df <- retrieve_neighbors(text = selected_word,
+                         projection_type = "tsne",
+                         annoy_model = annoy_model,
+                         n = 1000)
+}
 }

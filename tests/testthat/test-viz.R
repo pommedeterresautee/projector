@@ -44,7 +44,7 @@ test_that("PCA - not centered", {
 test_that("plot", {
   number_neighbors <- 1e3
   b <- retrieve_neighbors(text = selected_word, projection_type = "pca", annoy_model = annoy_model, n = number_neighbors)
-  p <- plot_text(b, 3)
+  p <- plot_texts(b, 3)
   expect_equal(p$x$attrs[[1]]$type, "scatter")
   expect_equal(p$x$attrs[[1]]$mode, "markers")
   expect_length(p$x$attrs[[1]]$marker$size, number_neighbors)

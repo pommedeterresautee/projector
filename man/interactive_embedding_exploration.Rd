@@ -24,3 +24,22 @@ of the neighborhood of a vector.
 
 Colors in the scatter plot represents clusters found by \link{dbscan}.
 }
+\examples{
+\dontrun{
+# This example should be run with a higher quality model
+# than the one embedded in fastrtext
+
+library(projector)
+library(fastrtext)
+
+model_test_path <- system.file("extdata",
+                               "model_unsupervised_test.bin",
+                               package = "fastrtext")
+
+model <- load_model(model_test_path)
+word_embeddings <- get_word_vectors(model, words = head(get_dictionary(model), 2e5))
+annoy_model <- get_annoy_model(word_embeddings, 5)
+
+interactive_embedding_exploration(annoy_model)
+}
+}

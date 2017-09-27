@@ -72,7 +72,7 @@ annoy_model <- get_annoy_model(word_embeddings, 5)
 # pivot_word <- "friendship" # for Wikipedia viz
 pivot_word <- "out"
 df <- retrieve_neighbors(text = pivot_word, projection_type = "tsne", annoy_model = annoy_model, n = 500)
-plot_text(coordinates = df, min_cluster_size = 3)
+plot_texts(coordinates = df, min_cluster_size = 3)
 ```
 
 ![VizProjector1](https://github.com/pommedeterresautee/projector/raw/master/tools/viz1.gif) 

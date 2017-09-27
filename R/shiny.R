@@ -14,6 +14,24 @@
 #' Colors in the scatter plot represents clusters found by [dbscan].
 #'
 #' @param annoy_model [RcppAnnoy] model generated with [get_annoy_model]
+#' @examples
+#' \dontrun{
+#' # This example should be run with a higher quality model
+#' # than the one embedded in fastrtext
+#'
+#' library(projector)
+#' library(fastrtext)
+#'
+#' model_test_path <- system.file("extdata",
+#'                                "model_unsupervised_test.bin",
+#'                                package = "fastrtext")
+#'
+#' model <- load_model(model_test_path)
+#' word_embeddings <- get_word_vectors(model, words = head(get_dictionary(model), 2e5))
+#' annoy_model <- get_annoy_model(word_embeddings, 5)
+#'
+#' interactive_embedding_exploration(annoy_model)
+#' }
 #' @importFrom shiny fluidPage textInput shinyApp sliderInput mainPanel titlePanel hr need validate h1 h2 h3 h4 h5 h6 numericInput selectInput sidebarPanel actionButton isolate observeEvent conditionalPanel selectizeInput updateSelectizeInput checkboxGroupInput div icon
 #' @importFrom plotly renderPlotly plotlyOutput
 #' @importFrom shinythemes shinytheme
@@ -63,7 +81,7 @@ interactive_embedding_exploration <- function(annoy_model){
           # hide waiting message and display plot
           hideElement("div_loading_message")
           showElement("div_plot", animType = "fade", anim = TRUE, time = 0.8)
-          plot_text(df, input$min_size_cluster)
+          plot_texts(df, input$min_size_cluster)
         })
       })
     })
