@@ -7,7 +7,7 @@
 get_coordinates_pca(vectors, transformations = c("center", "scaled"), ...)
 }
 \arguments{
-\item{vectors}{\link{matrix} containing the \code{n} closest neighboor}
+\item{vectors}{\link{matrix} containing the \code{n} closest neighbor}
 
 \item{transformations}{transformations applied to vectors before computing PCA}
 }

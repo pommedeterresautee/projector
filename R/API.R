@@ -4,7 +4,7 @@
 #' This function builds the [RcppAnnoy] model.
 #'
 #' @param vectors [matrix] where each row is an observation. [rownames] should contain textual versions of the vectors.
-#' @param number_trees [integer] counting the number of trees to grow in Annoy (for neighboor search). More gives better results but is slower to compute.
+#' @param number_trees [integer] counting the number of trees to grow in Annoy (for neighbor search). More gives better results but is slower to compute.
 #' @importFrom RcppAnnoy AnnoyAngular
 #' @importFrom assertthat assert_that
 #' @import methods
@@ -48,7 +48,7 @@ get_neighbors <- function(word, dict, annoy_model, n, search_k) {
 #' Rapid to compute but not always very meaningful.
 #' Data are centered and scaled.
 #'
-#' @param vectors [matrix] containing the `n` closest neighboor
+#' @param vectors [matrix] containing the `n` closest neighbor
 #' @param transformations transformations applied to vectors before computing PCA
 #' @keywords internal
 #' @importFrom stats prcomp
@@ -59,13 +59,13 @@ get_coordinates_pca <- function(vectors, transformations = c("center", "scaled")
   data.frame(pca$x[,1:2])
 }
 
-#' Compute 2D coordinates using T-SNE
+#' Compute 2D coordinates using `T-SNE`
 #'
 #' Better results but slow.
-#' @param vectors [matrix] containing the `n` closest neighboor
-#' @param max_iter maximum number of epoch (for T-SNE learning)
+#' @param vectors [matrix] containing the `n` closest neighbor
+#' @param max_iter maximum number of epoch (for `T-SNE` learning)
 #' @param perplexity how to balance attention between local and global aspects of data
-#' @param verbose print debug information (for T-SNE learning)
+#' @param verbose print debug information (for `T-SNE` learning)
 #' @keywords internal
 #' @importFrom Rtsne Rtsne
 get_coordinates_tsne <- function(vectors, max_iter = 500, perplexity = 30, verbose = FALSE, ...) {
@@ -78,7 +78,7 @@ get_coordinates_tsne <- function(vectors, max_iter = 500, perplexity = 30, verbo
 #'
 #' Transform original vectors in 2D coordinates applying [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis) or [T-SNE](https://distill.pub/2016/misread-tsne/).
 #'
-#' @param vectors [matrix] containing the `n` closest neighboor
+#' @param vectors [matrix] containing the `n` closest neighbor
 #' @param projection_type [character] defining the algorithm to use to compute the coordinates. (`tsne` or `pca`)
 #' @param ... parameters pass to projection algorithm (`max_iter`, `perplexity`, `verbose`)
 #' @importFrom assertthat assert_that is.string

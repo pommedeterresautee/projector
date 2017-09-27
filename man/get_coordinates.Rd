@@ -7,7 +7,7 @@
 get_coordinates(vectors, projection_type, ...)
 }
 \arguments{
-\item{vectors}{\link{matrix} containing the \code{n} closest neighboor}
+\item{vectors}{\link{matrix} containing the \code{n} closest neighbor}
 
 \item{projection_type}{\link{character} defining the algorithm to use to compute the coordinates. (\code{tsne} or \code{pca})}
 

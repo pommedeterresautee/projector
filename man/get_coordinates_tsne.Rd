@@ -2,19 +2,19 @@
 % Please edit documentation in R/API.R
 \name{get_coordinates_tsne}
 \alias{get_coordinates_tsne}
-\title{Compute 2D coordinates using T-SNE}
+\title{Compute 2D coordinates using \code{T-SNE}}
 \usage{
 get_coordinates_tsne(vectors, max_iter = 500, perplexity = 30,
   verbose = FALSE, ...)
 }
 \arguments{
-\item{vectors}{\link{matrix} containing the \code{n} closest neighboor}
+\item{vectors}{\link{matrix} containing the \code{n} closest neighbor}
 
-\item{max_iter}{maximum number of epoch (for T-SNE learning)}
+\item{max_iter}{maximum number of epoch (for \code{T-SNE} learning)}
 
 \item{perplexity}{how to balance attention between local and global aspects of data}
 
-\item{verbose}{print debug information (for T-SNE learning)}
+\item{verbose}{print debug information (for \code{T-SNE} learning)}
 }
 \description{
 Better results but slow.
