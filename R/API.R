@@ -140,6 +140,7 @@ center_coordinates <- function(coordinates) {
 #' @param center_pivot put pivot text in the middle of the graph
 #' @param ... parameters passed to projection algorithm (`max_iter`, `perplexity`, `verbose`, `transformations`)
 #' @examples
+#' if (interactive()){
 #' # This example should be run with a higher quality model
 #' # than the one embedded in fastrtext
 #' library(projector)
@@ -159,6 +160,7 @@ center_coordinates <- function(coordinates) {
 #'                          projection_type = "tsne",
 #'                          annoy_model = annoy_model,
 #'                          n = 1000)
+#' }
 #' @importFrom assertthat assert_that is.flag
 #' @export
 retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k = max(10000, 10 * n), center_pivot = TRUE, ...) {

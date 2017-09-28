@@ -33,6 +33,7 @@ Transform original vectors in 2D coordinates applying either:
 }
 }
 \examples{
+if (interactive()){
 # This example should be run with a higher quality model
 # than the one embedded in fastrtext
 library(projector)
@@ -52,4 +53,5 @@ df <- retrieve_neighbors(text = selected_word,
                          projection_type = "tsne",
                          annoy_model = annoy_model,
                          n = 1000)
+}
 }
