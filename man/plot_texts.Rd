@@ -15,7 +15,7 @@ plot_texts(coordinates, min_cluster_size = 5)
 Plot the text on an interactive scatter plot.
 }
 \examples{
-\dontrun{
+if(interactive()){
 # This example should be run with a higher quality model
 # than the one embedded in fastrtext
 library(projector)

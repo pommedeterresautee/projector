@@ -16,7 +16,7 @@ get_annoy_model(vectors, number_trees)
 This function builds the \link{RcppAnnoy} model.
 }
 \examples{
-\dontrun{
+if (interactive()){
 # This example should be run with a higher quality model
 # than the one embedded in fastrtext
 library(projector)

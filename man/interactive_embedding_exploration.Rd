@@ -25,7 +25,7 @@ of the neighborhood of a vector.
 Colors in the scatter plot represents clusters found by \link{dbscan}.
 }
 \examples{
-\dontrun{
+if(interactive()){
 # This example should be run with a higher quality model
 # than the one embedded in fastrtext
 

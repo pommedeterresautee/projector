@@ -1,3 +1,15 @@
+# second commit on 27.09.17
+For interactive examples please use:
+
+\examples{
+    if(interactive()){
+        your examples
+    }
+}
+
+This change has been applied on each example.
+One example is always executed (no dontrun or is interactive block)
+
 # first commit on 27.09.17
 Thanks, please add small executable examples in your Rd-files. -> examples has been added
 

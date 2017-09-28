@@ -6,7 +6,7 @@
 #' @param vectors [matrix] where each row is an observation. [rownames] should contain textual versions of the vectors.
 #' @param number_trees [integer] counting the number of trees to grow in Annoy (for neighbor search). More gives better results but is slower to compute.
 #' @examples
-#' \dontrun{
+#' if (interactive()){
 #' # This example should be run with a higher quality model
 #' # than the one embedded in fastrtext
 #' library(projector)
@@ -140,7 +140,6 @@ center_coordinates <- function(coordinates) {
 #' @param center_pivot put pivot text in the middle of the graph
 #' @param ... parameters passed to projection algorithm (`max_iter`, `perplexity`, `verbose`, `transformations`)
 #' @examples
-#' \dontrun{
 #' # This example should be run with a higher quality model
 #' # than the one embedded in fastrtext
 #' library(projector)
@@ -160,7 +159,6 @@ center_coordinates <- function(coordinates) {
 #'                          projection_type = "tsne",
 #'                          annoy_model = annoy_model,
 #'                          n = 1000)
-#' }
 #' @importFrom assertthat assert_that is.flag
 #' @export
 retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k = max(10000, 10 * n), center_pivot = TRUE, ...) {
@@ -185,7 +183,7 @@ retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k =
 #' @param coordinates [data.frame] containing 2D coordinates of texts.
 #' @param min_cluster_size [integer] corresponding to the minimum size of a vector (for the colors).
 #' @examples
-#' \dontrun{
+#' if(interactive()){
 #' # This example should be run with a higher quality model
 #' # than the one embedded in fastrtext
 #' library(projector)

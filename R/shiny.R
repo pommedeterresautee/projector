@@ -15,7 +15,7 @@
 #'
 #' @param annoy_model [RcppAnnoy] model generated with [get_annoy_model]
 #' @examples
-#' \dontrun{
+#' if(interactive()){
 #' # This example should be run with a higher quality model
 #' # than the one embedded in fastrtext
 #'
