@@ -14,6 +14,9 @@
 #' Colors in the scatter plot represents clusters found by [dbscan].
 #'
 #' @param annoy_model [RcppAnnoy] model generated with [get_annoy_model]
+#' @param default_number_neighbors set the number of neighbors slider to this value
+#' @param default_number_rounds set the number of `T-SNE` rounds slider to this value
+#' @param default_perplexity set the `T-SNE` perplexity slider to this value
 #' @examples
 #' if(interactive()){
 #' # This example should be run with a higher quality model
@@ -37,7 +40,7 @@
 #' @importFrom shinythemes shinytheme
 #' @importFrom shinyjs hideElement useShinyjs showElement hidden
 #' @export
-interactive_embedding_exploration <- function(annoy_model){
+interactive_embedding_exploration <- function(annoy_model, default_number_neighbors = 100, default_number_rounds = 500, default_perplexity = 30){
 
   ui <- fluidPage(theme = shinytheme("superhero"),
                   useShinyjs(),
@@ -45,12 +48,12 @@ interactive_embedding_exploration <- function(annoy_model){
                   hr(),
                   sidebarPanel(
                     selectizeInput("pivot_text", label = h4("Pivot text"), choices = NULL),
-                    sliderInput("number_neighbors", label = h5("Number of neighbors"), min = 0, max =  annoy_model$getNItems(), value = 500, ticks = TRUE, step = 100),
+                    sliderInput("number_neighbors", label = h5("Number of neighbors"), min = 0, max =  annoy_model$getNItems(), value = default_number_neighbors, ticks = TRUE, step = 100),
                     numericInput("min_size_cluster", label = h5("Minimum size of a cluster"), value = 3, step = 1),
                     selectInput("projection_algorithm", label = h5("Projection algorithm"), choices = c("T-SNE (better, slower)" = "tsne", "PCA (rapid)" = "pca"), selected = "tsne"),
                     conditionalPanel(condition = "input.projection_algorithm == 'tsne'",
-                      numericInput("epochs", label = h5("Epochs"), value = 500, step = 10),
-                      numericInput("perplexity", label = h5("Perplexity"), value = 30, step = 5, min = 1, max = 50)
+                      numericInput("epochs", label = h5("Epochs"), value = default_number_rounds, step = 10),
+                      numericInput("perplexity", label = h5("Perplexity"), value = default_perplexity, step = 5, min = 1, max = 50)
                     ),
                     conditionalPanel(condition = "input.projection_algorithm == 'pca'",
                                      checkboxGroupInput(inputId = "pca_transformation", label = h5("Transformations"), choices = c("center", "scaled"), selected = c("center", "scaled"))

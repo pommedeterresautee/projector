@@ -235,3 +235,40 @@ plot_texts <- function(coordinates, min_cluster_size = 5) {
   p
 }
 
+#' Save [RcppAnnoy] model
+#'
+#' Save the content of the model in two files:
+#' * the [RcppAnnoy] model
+#' * the dictionary ([character] containing texts)
+#' @param annoy_model [RcppAnnoy] model
+#' @param path_annoy path for the [RcppAnnoy] model
+#' @param path_dictionary path for the dictionary ([character] containing texts)
+#' @importFrom assertthat assert_that is.string
+save_annoy_model <- function(annoy_model, path_annoy, path_dictionary) {
+  assert_that(is(annoy_model, "Rcpp_AnnoyAngular"))
+  assert_that(annoy_model$getNItems() > 0)
+  assert_that(is.string(path_annoy))
+  assert_that(is.string(path_dictionary))
+  annoy_model$save(path_annoy)
+  dict <- attr(annoy_model, "dict")
+  number_dimensions <- length(annoy_model$getItemsVector(0))
+  saveRDS(list(dict = dict, number_dimensions = number_dimensions), file = path_dictionary)
+}
+
+#' Load [RcppAnnoy] model
+#'
+#' Load the content of the model from two files:
+#' * the [RcppAnnoy] model
+#' * the dictionary ([character] containing texts)
+#' @param path_annoy path to the [RcppAnnoy] model
+#' @param path_dictionary path to the dictionary ([character] containing texts)
+#' @importFrom assertthat assert_that is.string
+load_annoy_model <- function(path_annoy, path_dictionary) {
+  assert_that(is.string(path_annoy))
+  assert_that(is.string(path_dictionary))
+  param <- readRDS(path_dictionary)
+  annoy_model <- new(AnnoyAngular, param$number_dimensions)
+  annoy_model$load(path_annoy)
+  attr(annoy_model, "dict") <- param$dict
+  annoy_model
+}

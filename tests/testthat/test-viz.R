@@ -50,3 +50,14 @@ test_that("plot", {
   expect_length(p$x$attrs[[1]]$marker$size, number_neighbors)
   expect_length(p$x$attrs[[1]]$marker$color, number_neighbors)
 })
+
+test_that("save and load", {
+  annoy_model_path <- tempfile()
+  dict_path <- tempfile()
+  save_annoy_model(annoy_model, annoy_model_path, dict_path)
+  annoy_model_ter <- load_annoy_model(annoy_model_path, dict_path)
+  for (i in seq(0, annoy_model$getNItems() - 1)) {
+    expect_equal(annoy_model$getItemsVector(i), annoy_model_ter$getItemsVector(i))
+  }
+  expect_equal(annoy_model@dict, annoy_model_ter@dict)
+})
