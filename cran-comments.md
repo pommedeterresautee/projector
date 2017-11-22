@@ -1,3 +1,17 @@
+# second commit on 27.09.17
+For interactive examples please use:
+
+\examples{
+    if(interactive()){
+        your examples
+    }
+}
+
+This change has been applied on each example.
+
+# first commit on 27.09.17
+Thanks, please add small executable examples in your Rd-files. -> examples has been added
+
 ## Test environments
 * local Ubuntu 17.10, R 3.4.1
 * Rhub check_for_cran, check_on_macos, check_on_windows

@@ -20,3 +20,4 @@ get_neighbors(word, dict, annoy_model, n, search_k)
 \description{
 Use Annoy to rapidly retrieve the \code{n} most closest representation of a text.
 }
+\keyword{internal}

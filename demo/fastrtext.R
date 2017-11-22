@@ -14,4 +14,4 @@ annoy_model <- get_annoy_model(word_embeddings, 5)
 selected_word <- "out"
 df <- retrieve_neighbors(text = selected_word, projection_type = "tsne", annoy_model = annoy_model, n = 1000)
 
-plot_text(df, 3)
+plot_texts(df, 3)

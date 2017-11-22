@@ -5,6 +5,22 @@
 #'
 #' @param vectors [matrix] where each row is an observation. [rownames] should contain textual versions of the vectors.
 #' @param number_trees [integer] counting the number of trees to grow in Annoy (for neighbor search). More gives better results but is slower to compute.
+#' @examples
+#' if (interactive()){
+#' # This example should be run with a higher quality model
+#' # than the one embedded in fastrtext
+#' library(projector)
+#' library(fastrtext)
+#'
+#' model_test_path <- system.file("extdata",
+#'                                "model_unsupervised_test.bin",
+#'                                package = "fastrtext")
+#' model <- load_model(model_test_path)
+#' word_embeddings <- get_word_vectors(model,
+#'                                     words = head(get_dictionary(model), 2e5))
+#'
+#' annoy_model <- get_annoy_model(word_embeddings, 5)
+#' }
 #' @importFrom RcppAnnoy AnnoyAngular
 #' @importFrom assertthat assert_that
 #' @import methods
@@ -30,6 +46,7 @@ get_annoy_model <- function(vectors, number_trees) {
 #' @param n number of elements to retrieve
 #' @param search_k number of nodes to search in (Annoy parameter). Higher is better and slower.
 #' @importFrom assertthat assert_that is.count is.string
+#' @keywords internal
 get_neighbors <- function(word, dict, annoy_model, n, search_k) {
   assert_that(is.string(word))
   assert_that(is.count(n))
@@ -50,8 +67,8 @@ get_neighbors <- function(word, dict, annoy_model, n, search_k) {
 #'
 #' @param vectors [matrix] containing the `n` closest neighbor
 #' @param transformations transformations applied to vectors before computing PCA
-#' @keywords internal
 #' @importFrom stats prcomp
+#' @keywords internal
 get_coordinates_pca <- function(vectors, transformations = c("center", "scaled"), ...) {
   scale <- "center" %in% transformations
   center <- "scaled" %in% transformations
@@ -66,8 +83,8 @@ get_coordinates_pca <- function(vectors, transformations = c("center", "scaled")
 #' @param max_iter maximum number of epoch (for `T-SNE` learning)
 #' @param perplexity how to balance attention between local and global aspects of data
 #' @param verbose print debug information (for `T-SNE` learning)
-#' @keywords internal
 #' @importFrom Rtsne Rtsne
+#' @keywords internal
 get_coordinates_tsne <- function(vectors, max_iter = 500, perplexity = 30, verbose = FALSE, ...) {
   stop_lying_iter <- min(max_iter / 2, 250)
   tsne_model_1 <- Rtsne(vectors, check_duplicates = FALSE, pca = TRUE, max_iter = max_iter, perplexity = perplexity, theta = 0.5, dims = 2, verbose = verbose, stop_lying_iter = stop_lying_iter)
@@ -76,13 +93,15 @@ get_coordinates_tsne <- function(vectors, max_iter = 500, perplexity = 30, verbo
 
 #' Compute 2D coordinates of vectors
 #'
-#' Transform original vectors in 2D coordinates applying [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis) or [T-SNE](https://distill.pub/2016/misread-tsne/).
+#' Transform original vectors in 2D coordinates applying either:
+#' * [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis)
+#' * [T-SNE](https://distill.pub/2016/misread-tsne/).
 #'
 #' @param vectors [matrix] containing the `n` closest neighbor
 #' @param projection_type [character] defining the algorithm to use to compute the coordinates. (`tsne` or `pca`)
-#' @param ... parameters pass to projection algorithm (`max_iter`, `perplexity`, `verbose`)
+#' @param ... parameters passed to projection algorithm (`max_iter`, `perplexity`, `verbose`, `transformations`)
 #' @importFrom assertthat assert_that is.string
-#' @export
+#' @keywords internal
 get_coordinates <- function(vectors, projection_type, ...) {
   assert_that(is.matrix(vectors))
   assert_that(is.string(projection_type))
@@ -93,12 +112,12 @@ get_coordinates <- function(vectors, projection_type, ...) {
 
   colnames(coordinates) <- c("x", "y")
   coordinates$text <- rownames(vectors)
-  coordinates
+  coordinates[c("text", "x", "y")]
 }
 
 #' Center coordinates around the pivot vector
-#' @keywords internal
 #' @param coordinates [data.frame] containing coordinates to center. First position is the pivot.
+#' @keywords internal
 center_coordinates <- function(coordinates) {
   coordinates$x <- coordinates$x - coordinates[1,]$x
   coordinates$y <- coordinates$y - coordinates[1,]$y
@@ -107,15 +126,41 @@ center_coordinates <- function(coordinates) {
 
 #' Retrieve a list of neighbor vectors
 #'
-#' Use [RcppAnnoy] to rapidly retrieve a list of vector neighbors
+#' Use [RcppAnnoy] to rapidly retrieve a list of vector neighbors.
+#'
+#' Transform original vectors in 2D coordinates applying either:
+#' * [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis)
+#' * [T-SNE](https://distill.pub/2016/misread-tsne/).
 #'
 #' @param text [character] containing the text related to the pivot vector
-#' @param projection_type [character] defining the algorithm to use to compute the coordinates
+#' @param projection_type [character] defining the algorithm to use to compute the coordinates. (`tsne` or `pca`)
 #' @param annoy_model [RcppAnnoy] model
 #' @param n number of neighbors to retrieve
 #' @param search_k number of nodes to search in ([RcppAnnoy] parameter). Higher = ++precision & --speed
 #' @param center_pivot put pivot text in the middle of the graph
-#' @param ... additional parameters used in [get_coordinates]
+#' @param ... parameters passed to projection algorithm (`max_iter`, `perplexity`, `verbose`, `transformations`)
+#' @examples
+#' if (interactive()){
+#' # This example should be run with a higher quality model
+#' # than the one embedded in fastrtext
+#' library(projector)
+#' library(fastrtext)
+#'
+#' model_test_path <- system.file("extdata",
+#'                                "model_unsupervised_test.bin",
+#'                                package = "fastrtext")
+#' model <- load_model(model_test_path)
+#' word_embeddings <- get_word_vectors(model,
+#'                                     words = head(get_dictionary(model), 2e5))
+#'
+#' annoy_model <- get_annoy_model(word_embeddings, 5)
+#'
+#' selected_word <- "out"
+#' df <- retrieve_neighbors(text = selected_word,
+#'                          projection_type = "tsne",
+#'                          annoy_model = annoy_model,
+#'                          n = 1000)
+#' }
 #' @importFrom assertthat assert_that is.flag
 #' @export
 retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k = max(10000, 10 * n), center_pivot = TRUE, ...) {
@@ -139,16 +184,39 @@ retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k =
 #'
 #' @param coordinates [data.frame] containing 2D coordinates of texts.
 #' @param min_cluster_size [integer] corresponding to the minimum size of a vector (for the colors).
+#' @examples
+#' if(interactive()){
+#' # This example should be run with a higher quality model
+#' # than the one embedded in fastrtext
+#' library(projector)
+#' library(fastrtext)
+#'
+#' model_test_path <- system.file("extdata",
+#'                                "model_unsupervised_test.bin",
+#'                                package = "fastrtext")
+#' model <- load_model(model_test_path)
+#' word_embeddings <- get_word_vectors(model,
+#'                                     words = head(get_dictionary(model), 2e5))
+#'
+#' annoy_model <- get_annoy_model(word_embeddings, 5)
+#'
+#' selected_word <- "out"
+#' df <- retrieve_neighbors(text = selected_word,
+#'                          projection_type = "tsne",
+#'                          annoy_model = annoy_model,
+#'                          n = 1000)
+#' plot_texts(df, 3)
+#' }
 #' @importFrom dbscan hdbscan
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom grDevices colorRampPalette
 #' @importFrom plotly plot_ly layout
 #' @importFrom assertthat assert_that is.count
 #' @export
-plot_text <- function(coordinates, min_cluster_size = 5) {
+plot_texts <- function(coordinates, min_cluster_size = 5) {
   assert_that(is.count(min_cluster_size))
   selected_word <- coordinates$text[1]
-  cl <- hdbscan(coordinates[, 1:2], minPts = min_cluster_size)
+  cl <- hdbscan(coordinates[c("x", "y")], minPts = min_cluster_size)
   number_cluster <- length(unique(cl$cluster))
   colors <- colorRampPalette(brewer.pal(min(11, number_cluster), "Paired"))(number_cluster)
   colors <- colors[cl$cluster + 1]
@@ -167,3 +235,40 @@ plot_text <- function(coordinates, min_cluster_size = 5) {
   p
 }
 
+#' Save [RcppAnnoy] model
+#'
+#' Save the content of the model in two files:
+#' * the [RcppAnnoy] model
+#' * the dictionary ([character] containing texts)
+#' @param annoy_model [RcppAnnoy] model
+#' @param path_annoy path for the [RcppAnnoy] model
+#' @param path_dictionary path for the dictionary ([character] containing texts)
+#' @importFrom assertthat assert_that is.string
+save_annoy_model <- function(annoy_model, path_annoy, path_dictionary) {
+  assert_that(is(annoy_model, "Rcpp_AnnoyAngular"))
+  assert_that(annoy_model$getNItems() > 0)
+  assert_that(is.string(path_annoy))
+  assert_that(is.string(path_dictionary))
+  annoy_model$save(path_annoy)
+  dict <- attr(annoy_model, "dict")
+  number_dimensions <- length(annoy_model$getItemsVector(0))
+  saveRDS(list(dict = dict, number_dimensions = number_dimensions), file = path_dictionary)
+}
+
+#' Load [RcppAnnoy] model
+#'
+#' Load the content of the model from two files:
+#' * the [RcppAnnoy] model
+#' * the dictionary ([character] containing texts)
+#' @param path_annoy path to the [RcppAnnoy] model
+#' @param path_dictionary path to the dictionary ([character] containing texts)
+#' @importFrom assertthat assert_that is.string
+load_annoy_model <- function(path_annoy, path_dictionary) {
+  assert_that(is.string(path_annoy))
+  assert_that(is.string(path_dictionary))
+  param <- readRDS(path_dictionary)
+  annoy_model <- new(AnnoyAngular, param$number_dimensions)
+  annoy_model$load(path_annoy)
+  attr(annoy_model, "dict") <- param$dict
+  annoy_model
+}

@@ -4,10 +4,17 @@
 \alias{interactive_embedding_exploration}
 \title{Interactive exploration of embeddings}
 \usage{
-interactive_embedding_exploration(annoy_model)
+interactive_embedding_exploration(annoy_model, default_number_neighbors = 100,
+  default_number_rounds = 500, default_perplexity = 30)
 }
 \arguments{
 \item{annoy_model}{\link{RcppAnnoy} model generated with \link{get_annoy_model}}
+
+\item{default_number_neighbors}{set the number of neighbors slider to this value}
+
+\item{default_number_rounds}{set the number of \code{T-SNE} rounds slider to this value}
+
+\item{default_perplexity}{set the \code{T-SNE} perplexity slider to this value}
 }
 \description{
 Shiny application to interactively play with embeddings.
@@ -23,4 +30,23 @@ in particular with \code{T-SNE} approach.
 of the neighborhood of a vector.
 
 Colors in the scatter plot represents clusters found by \link{dbscan}.
+}
+\examples{
+if(interactive()){
+# This example should be run with a higher quality model
+# than the one embedded in fastrtext
+
+library(projector)
+library(fastrtext)
+
+model_test_path <- system.file("extdata",
+                               "model_unsupervised_test.bin",
+                               package = "fastrtext")
+
+model <- load_model(model_test_path)
+word_embeddings <- get_word_vectors(model, words = head(get_dictionary(model), 2e5))
+annoy_model <- get_annoy_model(word_embeddings, 5)
+
+interactive_embedding_exploration(annoy_model)
+}
 }

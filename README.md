@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/pommedeterresautee/projector.svg?branch=master)](https://travis-ci.org/pommedeterresautee/projector)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/pommedeterresautee/projector?branch=master&svg=true)](https://ci.appveyor.com/project/pommedeterresautee/projector)
 [![Coverage Status](https://img.shields.io/codecov/c/github/pommedeterresautee/projector/master.svg)](https://codecov.io/github/pommedeterresautee/projector?branch=master)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/projector)](https://cran.r-project.org/package=projector)
 [![Follow](https://img.shields.io/twitter/follow/pommedeterre33.svg?style=social)](https://twitter.com/intent/follow?screen_name=pommedeterre33)
 
 *Project dense vector representations of texts on a 2D plan to better understand neural models applied to NLP.*
@@ -32,20 +33,15 @@ This package is partially inspired from [Tensorflow projector](http://projector.
 Installation
 ------------
 
-You can install the `projector` package from Github as follows:
+You can install the `projector` package from Cran or Github as follows:
 
 ```R
+# From Cran
+install.packages("projector")
+
 # From Github
 # install.packages("devtools")
 devtools::install_github("pommedeterresautee/projector")
-```
-
-**WARNING** : This package depends of [RcppAnnoy](https://github.com/eddelbuettel/rcppannoy). There was a small bug in [RcppAnnoy](https://github.com/eddelbuettel/rcppannoy) package (version 0.0.9) which is now fixed only on Gihub but not yet on Cran.
-
-Please install the last version of RcppAnnoy from Github:
-
-```R
-devtools::install_github("eddelbuettel/rcppannoy")
 ```
 
 Demo code
@@ -72,7 +68,7 @@ annoy_model <- get_annoy_model(word_embeddings, 5)
 # pivot_word <- "friendship" # for Wikipedia viz
 pivot_word <- "out"
 df <- retrieve_neighbors(text = pivot_word, projection_type = "tsne", annoy_model = annoy_model, n = 500)
-plot_text(coordinates = df, min_cluster_size = 3)
+plot_texts(coordinates = df, min_cluster_size = 3)
 ```
 
 ![VizProjector1](https://github.com/pommedeterresautee/projector/raw/master/tools/viz1.gif) 

@@ -11,8 +11,13 @@ get_coordinates(vectors, projection_type, ...)
 
 \item{projection_type}{\link{character} defining the algorithm to use to compute the coordinates. (\code{tsne} or \code{pca})}
 
-\item{...}{parameters pass to projection algorithm (\code{max_iter}, \code{perplexity}, \code{verbose})}
+\item{...}{parameters passed to projection algorithm (\code{max_iter}, \code{perplexity}, \code{verbose}, \code{transformations})}
 }
 \description{
-Transform original vectors in 2D coordinates applying \href{https://en.wikipedia.org/wiki/Principal_component_analysis}{PCA} or \href{https://distill.pub/2016/misread-tsne/}{T-SNE}.
+Transform original vectors in 2D coordinates applying either:
+\itemize{
+\item \href{https://en.wikipedia.org/wiki/Principal_component_analysis}{PCA}
+\item \href{https://distill.pub/2016/misread-tsne/}{T-SNE}.
 }
+}
+\keyword{internal}

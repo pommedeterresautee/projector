@@ -44,9 +44,20 @@ test_that("PCA - not centered", {
 test_that("plot", {
   number_neighbors <- 1e3
   b <- retrieve_neighbors(text = selected_word, projection_type = "pca", annoy_model = annoy_model, n = number_neighbors)
-  p <- plot_text(b, 3)
+  p <- plot_texts(b, 3)
   expect_equal(p$x$attrs[[1]]$type, "scatter")
   expect_equal(p$x$attrs[[1]]$mode, "markers")
   expect_length(p$x$attrs[[1]]$marker$size, number_neighbors)
   expect_length(p$x$attrs[[1]]$marker$color, number_neighbors)
+})
+
+test_that("save and load", {
+  annoy_model_path <- tempfile()
+  dict_path <- tempfile()
+  save_annoy_model(annoy_model, annoy_model_path, dict_path)
+  annoy_model_ter <- load_annoy_model(annoy_model_path, dict_path)
+  for (i in seq(0, annoy_model$getNItems() - 1)) {
+    expect_equal(annoy_model$getItemsVector(i), annoy_model_ter$getItemsVector(i))
+  }
+  expect_equal(annoy_model@dict, annoy_model_ter@dict)
 })
