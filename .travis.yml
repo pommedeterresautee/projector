@@ -8,4 +8,5 @@ after_success:
   - Rscript -e 'covr::codecov()'
 
 r_packages:
+  - RcppThread
   - fastrtext
