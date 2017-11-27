@@ -16,4 +16,5 @@ before_install:
 addons:
   apt:
     packages:
+      - r-base-dev
       - gfortran
