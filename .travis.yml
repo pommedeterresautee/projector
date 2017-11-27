@@ -7,6 +7,6 @@ cache: packages
 after_success:
   - Rscript -e 'covr::codecov()'
 
-r_packages:
-  - RcppThread
-  - fastrtext
+#r_packages:
+#  - RcppThread
+#  - fastrtext
