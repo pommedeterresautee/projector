@@ -244,6 +244,7 @@ plot_texts <- function(coordinates, min_cluster_size = 5) {
 #' @param path_annoy path for the [RcppAnnoy] model
 #' @param path_dictionary path for the dictionary ([character] containing texts)
 #' @importFrom assertthat assert_that is.string
+#' @export
 save_annoy_model <- function(annoy_model, path_annoy, path_dictionary) {
   assert_that(is(annoy_model, "Rcpp_AnnoyAngular"))
   assert_that(annoy_model$getNItems() > 0)
@@ -263,6 +264,7 @@ save_annoy_model <- function(annoy_model, path_annoy, path_dictionary) {
 #' @param path_annoy path to the [RcppAnnoy] model
 #' @param path_dictionary path to the dictionary ([character] containing texts)
 #' @importFrom assertthat assert_that is.string
+#' @export
 load_annoy_model <- function(path_annoy, path_dictionary) {
   assert_that(is.string(path_annoy))
   assert_that(is.string(path_dictionary))
