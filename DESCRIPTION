@@ -19,10 +19,10 @@ Imports: methods,
   assertthat,
   shiny,
   shinythemes,
-  shinyjs
+  shinyjs,
+  fastrtext
 Suggests: knitr,
   testthat,
-  fastrtext,
   covr
 License: MIT + file LICENSE
 Encoding: UTF-8
