@@ -1,7 +1,8 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: R
-sudo: false
+dist: trusty
+sudo: required
 cache: packages
 
 after_success:
@@ -9,8 +10,8 @@ after_success:
 
 before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+  - sudo add-apt-repository ppa:marutter/c2d4u -y
   - sudo apt-get update -q
   - sudo apt-get install g++-4.9 -y
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 100
   - sudo apt-get install gfortran -y
-  - sudo apt-get install r-base-dev -y
