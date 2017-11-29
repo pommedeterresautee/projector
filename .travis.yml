@@ -11,7 +11,7 @@ before_install:
   - sudo apt-get install g++-4.9 -y
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 100
   - sudo apt-get install gfortran -y
-  - sudo apt-get install gfortran-4.8 -y
+  - cd /usr/lib/gcc/x86_64-linux-gnu/4.6 && sudo ln -s /usr/lib/gcc/x86_64-linux-gnu/4.8/libgfortran.a libgfortran.a
 
 repos:
   CRAN: http://cran.rstudio.com
