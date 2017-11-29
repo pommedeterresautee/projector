@@ -4,9 +4,6 @@ language: R
 dist: trusty
 sudo: required
 
-after_success:
-  - Rscript -e 'covr::codecov()'
-
 before_install:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo add-apt-repository ppa:marutter/c2d4u -y
@@ -14,3 +11,10 @@ before_install:
   - sudo apt-get install g++-4.9 -y
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 100
   - sudo apt-get install gfortran -y
+  - sudo apt-get install gfortran-4.8 -y
+
+repos:
+  CRAN: http://cran.rstudio.com
+
+after_success:
+  - Rscript -e 'covr::codecov()'
