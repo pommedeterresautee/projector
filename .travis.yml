@@ -1,20 +1,8 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: R
-dist: trusty
-sudo: required
-
-before_install:
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-  - sudo add-apt-repository ppa:marutter/c2d4u -y
-  - sudo apt-get update -q
-  - sudo apt-get install g++-4.9 -y
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 100
-  - sudo apt-get install gfortran -y
-  - cd /usr/lib/gcc/x86_64-linux-gnu/4.6 && sudo ln -s /usr/lib/gcc/x86_64-linux-gnu/4.8/libgfortran.a libgfortran.a
-
-repos:
-  CRAN: http://cran.rstudio.com
+sudo: false
+cache: packages
 
 after_success:
   - Rscript -e 'covr::codecov()'
