@@ -263,6 +263,7 @@ save_annoy_model <- function(annoy_model, path_annoy, path_dictionary) {
 #' @param path_annoy path to the [RcppAnnoy] model
 #' @param path_dictionary path to the dictionary ([character] containing texts)
 #' @importFrom assertthat assert_that is.string
+#' @keywords internal
 load_annoy_model <- function(path_annoy, path_dictionary) {
   assert_that(is.string(path_annoy))
   assert_that(is.string(path_dictionary))
@@ -270,5 +271,6 @@ load_annoy_model <- function(path_annoy, path_dictionary) {
   annoy_model <- new(AnnoyAngular, param$number_dimensions)
   annoy_model$load(path_annoy)
   attr(annoy_model, "dict") <- param$dict
+  assert_that(annoy_model$getNItems() == length(annoy_model@dict))
   annoy_model
 }
