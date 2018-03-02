@@ -20,3 +20,4 @@ Save the content of the model in two files:
 \item the dictionary (\link{character} containing texts)
 }
 }
+\keyword{internal}

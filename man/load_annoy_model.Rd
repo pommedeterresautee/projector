@@ -18,3 +18,4 @@ Load the content of the model from two files:
 \item the dictionary (\link{character} containing texts)
 }
 }
+\keyword{internal}

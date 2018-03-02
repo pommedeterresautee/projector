@@ -5,6 +5,7 @@
 #'
 #' @param vectors [matrix] where each row is an observation. [rownames] should contain textual versions of the vectors.
 #' @param number_trees [integer] counting the number of trees to grow in Annoy (for neighbor search). More gives better results but is slower to compute.
+#' @param verbose display progress
 #' @examples
 #' if (interactive()){
 #' # This example should be run with a higher quality model
@@ -25,9 +26,11 @@
 #' @importFrom assertthat assert_that
 #' @import methods
 #' @export
-get_annoy_model <- function(vectors, number_trees) {
+get_annoy_model <- function(vectors, number_trees, verbose = FALSE) {
   assert_that(length(rownames(vectors)) > 0)
   annoy_model <- new(AnnoyAngular, ncol(vectors))
+  annoy_model$verbose(verbose)
+
   for (i in seq(nrow(vectors))) {
     annoy_model$addItem(i - 1, vectors[i,])
   }
@@ -50,7 +53,7 @@ get_annoy_model <- function(vectors, number_trees) {
 get_neighbors <- function(word, dict, annoy_model, n, search_k) {
   assert_that(is.string(word))
   assert_that(is.count(n))
-  assert_that(is.count(search_k))
+  assert_that(is.count(search_k) | search_k == -1)
   assert_that(isTRUE(word %in% dict), msg = paste("Text not included in provided embeddings:", word))
   position <- which(word == dict)
   assert_that(is.count(position))
@@ -272,5 +275,6 @@ load_annoy_model <- function(path_annoy, path_dictionary) {
   annoy_model <- new(AnnoyAngular, param$number_dimensions)
   annoy_model$load(path_annoy)
   attr(annoy_model, "dict") <- param$dict
+  assert_that(annoy_model$getNItems() == length(annoy_model@dict))
   annoy_model
 }
