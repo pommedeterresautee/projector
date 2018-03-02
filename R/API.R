@@ -50,7 +50,7 @@ get_annoy_model <- function(vectors, number_trees) {
 get_neighbors <- function(word, dict, annoy_model, n, search_k) {
   assert_that(is.string(word))
   assert_that(is.count(n))
-  assert_that(is.count(search_k))
+  assert_that(is.count(search_k) | search_k == -1)
   assert_that(isTRUE(word %in% dict), msg = paste("Text not included in provided embeddings:", word))
   position <- which(word == dict)
   assert_that(is.count(position))
