@@ -29,7 +29,7 @@
 get_annoy_model <- function(vectors, number_trees, verbose = FALSE) {
   assert_that(length(rownames(vectors)) > 0)
   annoy_model <- new(AnnoyAngular, ncol(vectors))
-  annoy_model$verbose(verbose)
+  annoy_model$setVerbose(verbose)
 
   for (i in seq(nrow(vectors))) {
     annoy_model$addItem(i - 1, vectors[i,])
