@@ -4,5 +4,18 @@ language: R
 sudo: false
 cache: packages
 
+r:
+  - release
+  - devel
+
+os:
+  - linux
+  - osx
+
 after_success:
   - Rscript -e 'covr::codecov()'
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change

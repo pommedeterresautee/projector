@@ -2,8 +2,10 @@
 
 export(get_annoy_model)
 export(interactive_embedding_exploration)
+export(load_annoy_model)
 export(plot_texts)
 export(retrieve_neighbors)
+export(save_annoy_model)
 import(methods)
 importFrom(RColorBrewer,brewer.pal)
 importFrom(RcppAnnoy,AnnoyAngular)
