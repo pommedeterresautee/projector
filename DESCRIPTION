@@ -1,6 +1,6 @@
 Package: projector
 Title: Project Dense Vectors Representation of Texts on a 2D Plan
-Version: 0.0.3
+Version: 0.0.4
 Date: 2017-10-10
 Authors@R: person("Michaël", "Benesty", role = c("aut", "cre", "cph"), email = "michael@benesty.fr")
 Maintainer: Michaël Benesty <michael@benesty.fr>

@@ -4,12 +4,14 @@
 \alias{get_annoy_model}
 \title{Build Annoy model}
 \usage{
-get_annoy_model(vectors, number_trees)
+get_annoy_model(vectors, number_trees, verbose = FALSE)
 }
 \arguments{
 \item{vectors}{\link{matrix} where each row is an observation. \link{rownames} should contain textual versions of the vectors.}
 
 \item{number_trees}{\link{integer} counting the number of trees to grow in Annoy (for neighbor search). More gives better results but is slower to compute.}
+
+\item{verbose}{display progress}
 }
 \description{
 \link{RcppAnnoy} model is used to retrieve the most similar vectors to a pivot one.
