@@ -5,7 +5,7 @@
 #'
 #' @param vectors [matrix] where each row is an observation. [rownames] should contain textual versions of the vectors.
 #' @param number_trees [integer] counting the number of trees to grow in Annoy (for neighbor search). More gives better results but is slower to compute.
-#' @param verbose display progress
+#' @param verbose display progress of model building, plus some error message when a datapoint place is not found
 #' @examples
 #' if (interactive()){
 #' # This example should be run with a higher quality model
@@ -28,6 +28,7 @@
 #' @export
 get_annoy_model <- function(vectors, number_trees, verbose = FALSE) {
   assert_that(length(rownames(vectors)) > 0)
+  assert_that(is.matrix(vectors))
   annoy_model <- new(AnnoyAngular, ncol(vectors))
   annoy_model$setVerbose(verbose)
 
