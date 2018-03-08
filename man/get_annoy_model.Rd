@@ -11,7 +11,7 @@ get_annoy_model(vectors, number_trees, verbose = FALSE)
 
 \item{number_trees}{\link{integer} counting the number of trees to grow in Annoy (for neighbor search). More gives better results but is slower to compute.}
 
-\item{verbose}{display progress}
+\item{verbose}{display progress of model building, plus some error message when a datapoint place is not found}
 }
 \description{
 \link{RcppAnnoy} model is used to retrieve the most similar vectors to a pivot one.
