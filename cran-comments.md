@@ -1,3 +1,7 @@
+# second commit on 27.02.18
+
+Update year in date in DESCRIPTION file (2017 -> 2018)
+
 # second commit on 27.09.17
 For interactive examples please use:
 
