@@ -10,8 +10,11 @@ Description: Display dense vector representation of texts on a 2D plan to better
 URL: https://github.com/pommedeterresautee/projector
 BugReports: https://github.com/pommedeterresautee/projector/issues
 Depends: R (>= 3.3)
+LinkingTo: Rcpp
 Imports: methods,
   RcppAnnoy (>= 0.0.10),
+  Rcpp,
+  data.table,
   Rtsne,
   RColorBrewer,
   dbscan,

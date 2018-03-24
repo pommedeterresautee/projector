@@ -1,3 +1,8 @@
+# projector 0.0.3
+
+* better perf in finding position of a word
+* performant (C++) average vector function
+
 # projector 0.0.2
 
 * Add save and load model functions

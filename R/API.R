@@ -37,6 +37,13 @@ get_annoy_model <- function(vectors, number_trees, verbose = FALSE) {
   }
   annoy_model$build(number_trees)
   attr(annoy_model, "dict") <- rownames(vectors)
+
+  # don't set the key now to not reorder the dict
+  dict_position <- data.table("query" = annoy_model@dict)
+  set(x = dict_position, j = "position", value = seq(annoy_model@dict) - 1)
+  setkeyv(x = dict_position, cols = "query")
+  attr(annoy_model, "dict_position") <- dict_position
+
   annoy_model
 }
 
@@ -45,21 +52,20 @@ get_annoy_model <- function(vectors, number_trees, verbose = FALSE) {
 #' Use Annoy to rapidly retrieve the `n` most closest representation of a text.
 #'
 #' @param word [character] containing the pivot word
-#' @param dict [character] containing all possible texts
 #' @param annoy_model [RcppAnnoy] model
 #' @param n number of elements to retrieve
 #' @param search_k number of nodes to search in (Annoy parameter). Higher is better and slower.
 #' @importFrom assertthat assert_that is.count is.string
 #' @keywords internal
-get_neighbors <- function(word, dict, annoy_model, n, search_k) {
+get_neighbors <- function(word, annoy_model, n, search_k) {
   assert_that(is.string(word))
   assert_that(is.count(n))
   assert_that(is.count(search_k) | search_k == -1)
-  position <- which(word == dict)
+  position <- annoy_model@dict_position[word, position]
   assert_that(is.count(position), msg = paste("Text not included in provided embeddings:", word))
-  l <- annoy_model$getNNsByItemList(position - 1, n, search_k, TRUE)
+  l <- annoy_model$getNNsByItemList(position, n, search_k, TRUE)
   l$item <- l$item + 1
-  l$text <- dict[l$item]
+  l$text <- annoy_model@dict[l$item]
   l
 }
 
@@ -170,7 +176,7 @@ retrieve_neighbors <- function(text, projection_type, annoy_model, n, search_k =
     assert_that(is.flag(center_pivot))
     dict <- annoy_model@dict
     search_k <- min(length(dict), search_k)
-    l <- get_neighbors(text, dict, annoy_model, n, search_k)
+    l <- get_neighbors(word = text, annoy_model = annoy_model, n = n, search_k = search_k)
     vectors <- list()
     for (i in l$item) {
       vectors[[i]] <- annoy_model$getItemsVector(i)
@@ -255,8 +261,9 @@ save_annoy_model <- function(annoy_model, path_annoy, path_dictionary) {
   assert_that(is.string(path_dictionary))
   annoy_model$save(path_annoy)
   dict <- attr(annoy_model, "dict")
+  dict_position <- attr(annoy_model, "dict_position")
   number_dimensions <- length(annoy_model$getItemsVector(0))
-  saveRDS(list(dict = dict, number_dimensions = number_dimensions), file = path_dictionary)
+  saveRDS(list(dict = dict, number_dimensions = number_dimensions, dict_position = dict_position), file = path_dictionary)
 }
 
 #' Load [RcppAnnoy] model
@@ -267,6 +274,7 @@ save_annoy_model <- function(annoy_model, path_annoy, path_dictionary) {
 #' @param path_annoy path to the [RcppAnnoy] model
 #' @param path_dictionary path to the dictionary ([character] containing texts)
 #' @importFrom assertthat assert_that is.string
+#' @importFrom data.table data.table setkeyv set
 #' @export
 load_annoy_model <- function(path_annoy, path_dictionary) {
   assert_that(is.string(path_annoy))
@@ -276,5 +284,10 @@ load_annoy_model <- function(path_annoy, path_dictionary) {
   annoy_model$load(path_annoy)
   attr(annoy_model, "dict") <- param$dict
   assert_that(annoy_model$getNItems() == length(annoy_model@dict))
+  attr(annoy_model, "dict_position") <- param$dict_position
   annoy_model
 }
+
+#' @useDynLib projector
+#' @importFrom Rcpp sourceCpp
+NULL

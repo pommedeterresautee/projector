@@ -4,12 +4,10 @@
 \alias{get_neighbors}
 \title{Retrieve the most closest vector representation}
 \usage{
-get_neighbors(word, dict, annoy_model, n, search_k)
+get_neighbors(word, annoy_model, n, search_k)
 }
 \arguments{
 \item{word}{\link{character} containing the pivot word}
-
-\item{dict}{\link{character} containing all possible texts}
 
 \item{annoy_model}{\link{RcppAnnoy} model}
 
