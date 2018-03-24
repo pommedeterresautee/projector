@@ -5,7 +5,7 @@
 #'
 #' Efficient implementation of a function to average vectors from a matrix.
 #'
-#' @param keys [List] containing ids of embeddings in the matrix. Each slot of the [List] is related to a sequence.
+#' @param keys [list] containing ids of embeddings in the matrix. Each slot of the [list] is related to a sequence.
 #' @param mat embedding [matrix]
 #' @examples
 #' if (interactive()){
@@ -21,7 +21,7 @@
 #' word_embeddings <- get_word_vectors(model,
 #'                                     words = head(get_dictionary(model), 2e5))
 #'
-#' average_vectors(strsplit(x= "this function average vector", split = " "), word_embeddings)
+#' average_vectors(strsplit(x = "this function average vector", split = " "), word_embeddings)
 #' }
 #' @export
 average_vectors <- function(keys, mat) {

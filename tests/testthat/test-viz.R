@@ -61,3 +61,10 @@ test_that("save and load", {
   }
   expect_equal(annoy_model@dict, annoy_model_ter@dict)
 })
+
+test_that("average function", {
+  text <- strsplit(x = "this function average vector", split = " ")
+  result1 <- as.numeric(average_vectors(text, word_embeddings))
+  result2 <- colMeans(word_embeddings[which(rownames(word_embeddings) %in% text[[1]]),])
+  expect_equal(result1, result2)
+})

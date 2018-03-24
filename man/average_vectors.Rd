@@ -7,7 +7,7 @@
 average_vectors(keys, mat)
 }
 \arguments{
-\item{keys}{\link{List} containing ids of embeddings in the matrix. Each slot of the \link{List} is related to a sequence.}
+\item{keys}{\link{list} containing ids of embeddings in the matrix. Each slot of the \link{list} is related to a sequence.}
 
 \item{mat}{embedding \link{matrix}}
 }
@@ -28,6 +28,6 @@ model <- load_model(model_test_path)
 word_embeddings <- get_word_vectors(model,
                                     words = head(get_dictionary(model), 2e5))
 
-average_vectors(strsplit(x= "this function average vector", split = " "), word_embeddings)
+average_vectors(strsplit(x = "this function average vector", split = " "), word_embeddings)
 }
 }
