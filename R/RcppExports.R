@@ -3,10 +3,11 @@
 
 #' Average vectors
 #'
-#' Efficient implementation of a function to average vectors from a matrix.
+#' Efficient implementation of a function to average embeddings stored in a [matrix].
 #'
 #' @param keys [list] containing ids of embeddings in the matrix. Each slot of the [list] is related to a sequence.
-#' @param mat embedding [matrix]
+#' @param mat [matrix] where each row is a an embedding. Each row has a name and keys parameter are names of rows.
+#' @return a [matrix] of embeddings where each row is related to each slot of the list. When an Id is not found, the full vector related to the sequence is [NA].
 #' @examples
 #' if (interactive()){
 #' # This example should be run with a higher quality model

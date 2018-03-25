@@ -1,5 +1,7 @@
 context("Word embeddings with fastrtext")
 
+set.seed(123)
+
 library(fastrtext)
 
 model_test_path <- system.file("extdata",
@@ -64,7 +66,12 @@ test_that("save and load", {
 
 test_that("average function", {
   text <- strsplit(x = "this function average vector", split = " ")
-  result1 <- as.numeric(average_vectors(text, word_embeddings))
+  result1 <- as.numeric(average_vectors(keys = text, mat = word_embeddings))
   result2 <- colMeans(word_embeddings[which(rownames(word_embeddings) %in% text[[1]]),])
   expect_equal(result1, result2)
+})
+
+test_that("word position", {
+  index_tests <- sample(seq(annoy_model@dict), 50)
+  expect_setequal(annoy_model@dict[index_tests], annoy_model@dict_position[(position + 1) %in% index_tests, query])
 })

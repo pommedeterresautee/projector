@@ -61,12 +61,20 @@ get_neighbors <- function(word, annoy_model, n, search_k) {
   assert_that(is.string(word))
   assert_that(is.count(n))
   assert_that(is.count(search_k) | search_k == -1)
-  position <- annoy_model@dict_position[word, position]
+  position <- get_word_position(word, annoy_model)
   assert_that(is.count(position), msg = paste("Text not included in provided embeddings:", word))
   l <- annoy_model$getNNsByItemList(position, n, search_k, TRUE)
   l$item <- l$item + 1
   l$text <- annoy_model@dict[l$item]
   l
+}
+
+#' Get word position
+#' @param word [character] words to get the position from
+#' @param annoy_model [RcppAnnoy] model
+#' @keywords internal
+get_word_position <- function(word, annoy_model) {
+  annoy_model@dict_position[word, position]
 }
 
 #' Compute 2D coordinates using PCA

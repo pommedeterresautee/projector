@@ -9,10 +9,13 @@ average_vectors(keys, mat)
 \arguments{
 \item{keys}{\link{list} containing ids of embeddings in the matrix. Each slot of the \link{list} is related to a sequence.}
 
-\item{mat}{embedding \link{matrix}}
+\item{mat}{\link{matrix} where each row is a an embedding. Each row has a name and keys parameter are names of rows.}
+}
+\value{
+a \link{matrix} of embeddings where each row is related to each slot of the list. When an Id is not found, the full vector related to the sequence is \link{NA}.
 }
 \description{
-Efficient implementation of a function to average vectors from a matrix.
+Efficient implementation of a function to average embeddings stored in a \link{matrix}.
 }
 \examples{
 if (interactive()){
