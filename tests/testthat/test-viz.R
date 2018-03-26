@@ -75,3 +75,11 @@ test_that("word position", {
   index_tests <- sample(seq(annoy_model@dict), 50)
   expect_setequal(annoy_model@dict[index_tests], annoy_model@dict_position[(position + 1) %in% index_tests, query])
 })
+
+test_that("retrieve neighboor", {
+  number_neighbors <- 10
+
+  t1 <- projector:::get_neighbors_from_text(text = selected_word, annoy_model = annoy_model, n = number_neighbors, search_k = -1)
+  t2 <- projector:::get_neighbors_from_free_text(text = selected_word, annoy_model = annoy_model, n = number_neighbors, search_k = -1, word_embeddings_mat = word_embeddings)
+  expect_equivalent(t1, t2)
+})
