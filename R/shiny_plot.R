@@ -52,8 +52,8 @@ interactive_embedding_exploration <- function(annoy_model, default_number_neighb
                                               label = "Pivot text"),
                             material_slider("number_neighbors", 
                                             label = "Number of neighbors", 
-                                            min = 0, 
-                                            max = annoy_model$getNItems(), 
+                                            min_value = 0, 
+                                            max_value = annoy_model$getNItems(), 
                                             initial_value = default_number_neighbors),
                             material_number_box("min_size_cluster", 
                                                 label = "Minimum size of a cluster", 
@@ -83,17 +83,16 @@ interactive_embedding_exploration <- function(annoy_model, default_number_neighb
                             ),
                             material_button("plot_button", "Plot!")
                           )
-                        )
-                      ,
-                      material_column(
-                        width = 7,
-                        material_card(
-                          depth = 2,
-                          plotlyOutput("vector_neighbor_plot"))
-                      )))
-
+                        ),
+                        material_column(
+                          width = 7,
+                          material_card(
+                            depth = 2,
+                            plotlyOutput("vector_neighbor_plot"))
+                        )))
+  
   server <- function(input, output, session) {
-
+    
     observeEvent(input$plot_button, {
       output$vector_neighbor_plot <- renderPlotly({
         isolate({
