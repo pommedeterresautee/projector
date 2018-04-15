@@ -6,20 +6,21 @@
 using namespace Rcpp;
 
 // average_vectors
-NumericMatrix average_vectors(const List& keys, const NumericMatrix& mat);
-RcppExport SEXP _projector_average_vectors(SEXP keysSEXP, SEXP matSEXP) {
+NumericMatrix average_vectors(const List& keys, const NumericMatrix& mat, bool na_if_unknwown_word);
+RcppExport SEXP _projector_average_vectors(SEXP keysSEXP, SEXP matSEXP, SEXP na_if_unknwown_wordSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const List& >::type keys(keysSEXP);
     Rcpp::traits::input_parameter< const NumericMatrix& >::type mat(matSEXP);
-    rcpp_result_gen = Rcpp::wrap(average_vectors(keys, mat));
+    Rcpp::traits::input_parameter< bool >::type na_if_unknwown_word(na_if_unknwown_wordSEXP);
+    rcpp_result_gen = Rcpp::wrap(average_vectors(keys, mat, na_if_unknwown_word));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_projector_average_vectors", (DL_FUNC) &_projector_average_vectors, 2},
+    {"_projector_average_vectors", (DL_FUNC) &_projector_average_vectors, 3},
     {NULL, NULL, 0}
 };
 

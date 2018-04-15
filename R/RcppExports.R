@@ -7,6 +7,7 @@
 #'
 #' @param keys [list] containing ids of embeddings in the matrix. Each slot of the [list] is related to a sequence.
 #' @param mat [matrix] where each row is a an embedding. Each row has a name and keys parameter are names of rows.
+#' @param na_if_unknwown_word [TRUE] to fulfill a row with [NA] if one word of the document is unknown, and [FALSE] to only average known vectors
 #' @return a [matrix] of embeddings where each row is related to each slot of the list. When an Id is not found, the full vector related to the sequence is [NA].
 #' @examples
 #' if (interactive()){
@@ -22,10 +23,10 @@
 #' word_embeddings <- get_word_vectors(model,
 #'                                     words = head(get_dictionary(model), 2e5))
 #'
-#' average_vectors(strsplit(x = "this function average vector", split = " "), word_embeddings)
+#' average_vectors(strsplit(x = "this function average vector", split = " "), word_embeddings, TRUE)
 #' }
 #' @export
-average_vectors <- function(keys, mat) {
-    .Call('_projector_average_vectors', PACKAGE = 'projector', keys, mat)
+average_vectors <- function(keys, mat, na_if_unknwown_word) {
+    .Call('_projector_average_vectors', PACKAGE = 'projector', keys, mat, na_if_unknwown_word)
 }
 

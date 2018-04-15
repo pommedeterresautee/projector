@@ -2,8 +2,8 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-NumericMatrix subset_matrix(const NumericMatrix& mat, const IntegerVector& index_match_rows) {
-  R_xlen_t nb_rows = index_match_rows.length();
+NumericMatrix subset_matrix(const NumericMatrix& mat, const std::vector<double>& index_match_rows) {
+  R_xlen_t nb_rows = index_match_rows.size();
   R_xlen_t nb_columns = mat.ncol();
 
   NumericMatrix result_mat = no_init(nb_rows, nb_columns);
@@ -33,6 +33,7 @@ NumericVector col_means(const NumericMatrix& mat) {
 //'
 //' @param keys [list] containing ids of embeddings in the matrix. Each slot of the [list] is related to a sequence.
 //' @param mat [matrix] where each row is a an embedding. Each row has a name and keys parameter are names of rows.
+//' @param na_if_unknwown_word [TRUE] to fulfill a row with [NA] if one word of the document is unknown, and [FALSE] to only average known vectors
 //' @return a [matrix] of embeddings where each row is related to each slot of the list. When an Id is not found, the full vector related to the sequence is [NA].
 //' @examples
 //' if (interactive()){
@@ -48,30 +49,32 @@ NumericVector col_means(const NumericMatrix& mat) {
 //' word_embeddings <- get_word_vectors(model,
 //'                                     words = head(get_dictionary(model), 2e5))
 //'
-//' average_vectors(strsplit(x = "this function average vector", split = " "), word_embeddings)
+//' average_vectors(strsplit(x = "this function average vector", split = " "), word_embeddings, TRUE)
 //' }
 //' @export
 // [[Rcpp::export]]
-NumericMatrix average_vectors(const List& keys, const NumericMatrix& mat) {
+NumericMatrix average_vectors(const List& keys, const NumericMatrix& mat, bool na_if_unknwown_word) {
   NumericMatrix result_mat = no_init(keys.size(), mat.ncol());
 
   const NumericVector na_vector(mat.ncol(), NumericVector::get_na());
   const CharacterVector row_names = rownames(mat);
-  const int na_value = NumericVector::get_na();
   CharacterVector selected_rows;
-  IntegerVector index_match_rows;
+  std::vector<double> index_match_rows;
 
   for (int i = 0; i < keys.size(); i++) {
     Rcpp::checkUserInterrupt();
     selected_rows = keys[i];
-    index_match_rows = match(selected_rows, row_names);
-
+    index_match_rows = Rcpp::as<std::vector<double> >(match(selected_rows, row_names));
     bool has_na = false;
 
     for (int j = 0; j < index_match_rows.size(); ++j) {
-      if(index_match_rows[j] == na_value) {
-        has_na = true;
-        break;
+      if(std::isnan(index_match_rows[j])) {
+        if (na_if_unknwown_word) {
+          has_na = true;
+          break;
+        } else {
+          index_match_rows.erase(index_match_rows.begin() + j);
+        }
       }
     }
 
