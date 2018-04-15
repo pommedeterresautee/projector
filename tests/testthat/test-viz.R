@@ -69,6 +69,10 @@ test_that("average function", {
   result1 <- as.numeric(average_vectors(keys = text, mat = word_embeddings, na_if_unknwown_word = TRUE))
   result2 <- colMeans(word_embeddings[which(rownames(word_embeddings) %in% text[[1]]),])
   expect_equal(result1, result2)
+
+  text2 <- strsplit(x = "this function average vector popopopopo", split = " ")
+  expect_true(all(is.na(average_vectors(keys = text2, mat = word_embeddings, na_if_unknwown_word = TRUE))))
+  expect_equal(as.numeric(average_vectors(keys = text2, mat = word_embeddings, na_if_unknwown_word = FALSE)), result1)
 })
 
 test_that("word position", {
