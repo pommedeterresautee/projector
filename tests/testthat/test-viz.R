@@ -66,7 +66,7 @@ test_that("save and load", {
 
 test_that("average function", {
   text <- strsplit(x = "this function average vector", split = " ")
-  result1 <- as.numeric(average_vectors(keys = text, mat = word_embeddings))
+  result1 <- as.numeric(average_vectors(keys = text, mat = word_embeddings, na_if_unknwown_word = TRUE))
   result2 <- colMeans(word_embeddings[which(rownames(word_embeddings) %in% text[[1]]),])
   expect_equal(result1, result2)
 })
