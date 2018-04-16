@@ -37,8 +37,8 @@ model <- load_model(model_test_path)
 word_embeddings_mat <- get_word_vectors(model, words = head(get_dictionary(model), 2e5))
 annoy_model <- get_annoy_model(word_embeddings_mat, 5)
 
-shiny_text(annoy_model = annoy_model, 
-           word_embeddings_mat = word_embeddings_mat, 
+shiny_text(annoy_model = annoy_model,
+           word_embeddings_mat = word_embeddings_mat,
            normalize_text = tolower)
 }
 }

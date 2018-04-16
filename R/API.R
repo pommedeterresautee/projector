@@ -68,24 +68,26 @@ get_neighbors_from_text <- function(text, annoy_model, n, search_k) {
   l
 }
 
-#' Retrieve the most closest vector representation of a free unknown text
+#' Retrieve the most closest vector representation of a free text
 #'
 #' Use Annoy to rapidly retrieve the `n` most closest representation of a text.
 #'
-#' @param text [character] containing the pivot text. Can be unknown text.
+#' @param text [character] containing the text searched.
 #' @param annoy_model [RcppAnnoy] model
 #' @param word_embeddings_mat a [matrix] containing word embeddings.
-#' @param n number of elements to retrieve
-#' @param search_k number of nodes to search in (Annoy parameter). Higher is better and slower.
-#' @importFrom assertthat assert_that is.count is.string
+#' @param n top n elements to retrieve
+#' @param search_k number of nodes to search in (Annoy parameter). Higher is better (and slower).
+#' @param allow_unknown_word [FALSE] to return [NA] if one of the word is unknown, [TRUE] to work with remaining known words
+#' @importFrom assertthat assert_that is.count is.string is.flag
 #' @keywords internal
-get_neighbors_from_free_text <- function(text, annoy_model, word_embeddings_mat, n, search_k) {
+get_neighbors_from_free_text <- function(text, annoy_model, word_embeddings_mat, n, search_k, allow_unknown_word) {
   assert_that(is.string(text))
   assert_that(is.count(n))
   assert_that(is.matrix(word_embeddings_mat))
   assert_that(is.count(search_k) | search_k == -1)
+  assert_that(is.flag(allow_unknown_word))
   splitted_lines <- strsplit(x = text, split = " ", fixed = TRUE)
-  query_embedding <- average_vectors(keys = splitted_lines, mat = word_embeddings_mat, na_if_unknwown_word = TRUE)
+  query_embedding <- average_vectors(keys = splitted_lines, mat = word_embeddings_mat, na_if_unknwown_word = !allow_unknown_word)
   assert_that(all(!is.na(query_embedding)))
   l <- annoy_model$getNNsByVectorList(query_embedding, n, -1, TRUE)
   l$text <- annoy_model@dict[l$item + 1]

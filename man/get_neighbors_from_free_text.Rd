@@ -2,21 +2,23 @@
 % Please edit documentation in R/API.R
 \name{get_neighbors_from_free_text}
 \alias{get_neighbors_from_free_text}
-\title{Retrieve the most closest vector representation of a free unknown text}
+\title{Retrieve the most closest vector representation of a free text}
 \usage{
 get_neighbors_from_free_text(text, annoy_model, word_embeddings_mat, n,
-  search_k)
+  search_k, allow_unknown_word)
 }
 \arguments{
-\item{text}{\link{character} containing the pivot text. Can be unknown text.}
+\item{text}{\link{character} containing the text searched.}
 
 \item{annoy_model}{\link{RcppAnnoy} model}
 
 \item{word_embeddings_mat}{a \link{matrix} containing word embeddings.}
 
-\item{n}{number of elements to retrieve}
+\item{n}{top n elements to retrieve}
 
-\item{search_k}{number of nodes to search in (Annoy parameter). Higher is better and slower.}
+\item{search_k}{number of nodes to search in (Annoy parameter). Higher is better (and slower).}
+
+\item{allow_unknown_word}{\link{FALSE} to return \link{NA} if one of the word is unknown, \link{TRUE} to work with remaining known words}
 }
 \description{
 Use Annoy to rapidly retrieve the \code{n} most closest representation of a text.

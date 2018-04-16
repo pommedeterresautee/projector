@@ -89,6 +89,6 @@ test_that("retrieve neighboor", {
   number_neighbors <- 10
 
   t1 <- projector:::get_neighbors_from_text(text = selected_word, annoy_model = annoy_model, n = number_neighbors, search_k = -1)
-  t2 <- projector:::get_neighbors_from_free_text(text = selected_word, annoy_model = annoy_model, n = number_neighbors, search_k = -1, word_embeddings_mat = word_embeddings)
+  t2 <- projector:::get_neighbors_from_free_text(text = selected_word, annoy_model = annoy_model, n = number_neighbors, search_k = -1, word_embeddings_mat = word_embeddings, allow_unknown_word = FALSE)
   expect_equivalent(t1, t2)
 })

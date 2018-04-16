@@ -3,7 +3,7 @@
 #' Shiny application to display closest embeddings to a query
 #' User provides a pivot word and the n most similar word
 #' are displayed.
-#' 
+#'
 #' Word embeddings are retrieved from the provided [matrix] and averaged to get the embedding of the query.
 #'
 #' @param annoy_model [RcppAnnoy] model generated with [get_annoy_model]
@@ -25,8 +25,8 @@
 #' word_embeddings_mat <- get_word_vectors(model, words = head(get_dictionary(model), 2e5))
 #' annoy_model <- get_annoy_model(word_embeddings_mat, 5)
 #'
-#' shiny_text(annoy_model = annoy_model, 
-#'            word_embeddings_mat = word_embeddings_mat, 
+#' shiny_text(annoy_model = annoy_model,
+#'            word_embeddings_mat = word_embeddings_mat,
 #'            normalize_text = tolower)
 #' }
 #' @importFrom shiny textInput shinyApp tableOutput renderTable showNotification
@@ -35,10 +35,10 @@
 #' @importFrom assertthat assert_that is.string
 #' @export
 shiny_text <- function(annoy_model, word_embeddings_mat, normalize_text) {
-  
+
   ui <- material_page(
     title = "Approx neighborhood search",
-    
+
     material_row(
       material_column(
         width = 4,
@@ -49,7 +49,7 @@ shiny_text <- function(annoy_model, word_embeddings_mat, normalize_text) {
                     value = "",
                     width = NULL,
                     placeholder = "Enter query here"),
-          
+
           material_number_box(input_id = "top_n",
                               min_value = 2,
                               max_value = 100,
@@ -67,9 +67,9 @@ shiny_text <- function(annoy_model, word_embeddings_mat, normalize_text) {
       )
     )
   )
-  
+
   server <- function(input, output, session) {
-    
+
     output$table <- renderTable({
       query_normalized <- normalize_text(input$query_input)
       assert_that(is.string(query_normalized))
@@ -77,7 +77,8 @@ shiny_text <- function(annoy_model, word_embeddings_mat, normalize_text) {
                                             annoy_model = annoy_model,
                                             word_embeddings_mat = word_embeddings_mat,
                                             n = input$top_n,
-                                            search_k = -1), silent = TRUE)
+                                            search_k = -1,
+                                            allow_unknown_word = FALSE), silent = TRUE)
       if (class(l) != "try-error") {
         data.table(query = l$text,
                    distance = l$distance)
@@ -88,7 +89,7 @@ shiny_text <- function(annoy_model, word_embeddings_mat, normalize_text) {
       }
     })
   }
-  
+
   shinyApp(ui = ui, server = server)
-  
+
 }
