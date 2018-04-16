@@ -65,20 +65,23 @@ NumericMatrix average_vectors(const List& keys, const NumericMatrix& mat, bool n
     Rcpp::checkUserInterrupt();
     selected_rows = keys[i];
     index_match_rows = Rcpp::as<std::vector<double> >(match(selected_rows, row_names));
-    bool has_na = false;
+    bool return_na = false;
 
-    for (int j = 0; j < index_match_rows.size(); ++j) {
-      if(std::isnan(index_match_rows[j])) {
+    // https://stackoverflow.com/a/31329841/817158
+    for (auto it = index_match_rows.begin(); it != index_match_rows.end(); /* NOTHING */) {
+      if(std::isnan(*it)) {
         if (na_if_unknwown_word) {
-          has_na = true;
+          return_na = true;
           break;
         } else {
-          index_match_rows.erase(index_match_rows.begin() + j);
+          it = index_match_rows.erase(it);
         }
+      } else {
+        ++it;
       }
     }
 
-    if (has_na) {
+    if (return_na || index_match_rows.size() == 0) {
       result_mat(i, _) = na_vector;
     } else {
       NumericMatrix subset_mat = subset_matrix(mat, index_match_rows);
