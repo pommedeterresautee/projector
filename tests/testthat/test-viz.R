@@ -78,6 +78,9 @@ test_that("average function", {
   text3 <- strsplit(x = "popopopopo fjdklsfjlds", split = " ")
   expect_true(all(is.na(average_vectors(keys = text3, mat = word_embeddings, na_if_unknwown_word = FALSE))))
   expect_true(all(is.na(average_vectors(keys = text3, mat = word_embeddings, na_if_unknwown_word = TRUE))))
+
+  text4 <- rep(text, 500)
+  expect_false(any(is.na(as.numeric(average_vectors(keys = text4, mat = word_embeddings, na_if_unknwown_word = FALSE)))))
 })
 
 test_that("word position", {

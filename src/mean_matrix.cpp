@@ -1,25 +1,32 @@
 // [[Rcpp::plugins("cpp11")]]
+// [[Rcpp::plugins(openmp) ]]
+// [[Rcpp::depends(RcppProgress)]]
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include <Rcpp.h>
+#include <progress.hpp>
 using namespace Rcpp;
 
 NumericMatrix subset_matrix(const NumericMatrix& mat, const std::vector<double>& index_match_rows) {
   R_xlen_t nb_rows = index_match_rows.size();
   R_xlen_t nb_columns = mat.ncol();
 
-  NumericMatrix result_mat = no_init(nb_rows, nb_columns);
+  NumericMatrix result_subset_mat(nb_rows, nb_columns);
 
   for (R_xlen_t j = 0; j < nb_columns; j++) {
     for (R_xlen_t i = 0; i < nb_rows; i++) {
-      result_mat(i, j) = mat(index_match_rows[i] - 1, j);
+      result_subset_mat(i, j) = mat(index_match_rows[i] - 1, j);
     }
   }
 
-  return result_mat;
+  return result_subset_mat;
 }
 
 NumericVector col_means(const NumericMatrix& mat) {
   int nb_columns = mat.ncol();
-  NumericVector out = no_init(nb_columns);
+  NumericVector out(nb_columns);
 
   for(int j=0; j < nb_columns; j++ ) {
     out[j] = mean(mat(_, j));
@@ -53,18 +60,30 @@ NumericVector col_means(const NumericMatrix& mat) {
 //' }
 //' @export
 // [[Rcpp::export]]
-NumericMatrix average_vectors(const List& keys, const NumericMatrix& mat, bool na_if_unknwown_word) {
-  NumericMatrix result_mat = no_init(keys.size(), mat.ncol());
+NumericMatrix average_vectors(const List& keys, const NumericMatrix& mat, bool na_if_unknwown_word, int threads=4, bool verbose=false) {
+  #ifdef _OPENMP
+    if (threads > 0) omp_set_num_threads( threads );
+    if (verbose) {
+      REprintf("Number of threads=%i\n", omp_get_max_threads());
+    }
+  #endif
+
+  NumericMatrix result_mat(keys.size(), mat.ncol());
 
   const NumericVector na_vector(mat.ncol(), NumericVector::get_na());
   const CharacterVector row_names = rownames(mat);
-  CharacterVector selected_rows;
-  std::vector<double> index_match_rows;
 
+  // usefull for user interruption
+  Progress p(0, false);
+
+  // #pragma omp parallel for schedule(dynamic)
   for (int i = 0; i < keys.size(); i++) {
-    Rcpp::checkUserInterrupt();
-    selected_rows = keys[i];
-    index_match_rows = Rcpp::as<std::vector<double> >(match(selected_rows, row_names));
+    if (Progress::check_abort()) {
+      throw std::invalid_argument("User interruption");
+    }
+
+    CharacterVector selected_rows = keys[i];
+    std::vector<double> index_match_rows = Rcpp::as<std::vector<double> >(match(selected_rows, row_names));
     bool return_na = false;
 
     // https://stackoverflow.com/a/31329841/817158
@@ -81,12 +100,18 @@ NumericMatrix average_vectors(const List& keys, const NumericMatrix& mat, bool n
       }
     }
 
+    NumericVector row_mat(mat.ncol());
     if (return_na || index_match_rows.size() == 0) {
-      result_mat(i, _) = na_vector;
+      row_mat = na_vector;
     } else {
       NumericMatrix subset_mat = subset_matrix(mat, index_match_rows);
-      result_mat(i, _) = col_means(subset_mat);
+      row_mat = col_means(subset_mat);
     }
+
+    // #pragma omp critical
+    // {
+    result_mat(i, _) = row_mat;
+    // }
   }
 
   return result_mat;
