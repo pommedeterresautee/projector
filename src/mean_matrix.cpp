@@ -2,7 +2,7 @@
 
 #include <Rcpp.h>
 #include <RcppParallel.h>
-#include<map>
+#include <map>
 
 using namespace Rcpp;
 using namespace RcppParallel;
@@ -17,29 +17,20 @@ inline std::vector<std::string> split_string(const std::string& text){
   return items;
 }
 
-NumericMatrix subset_matrix(const NumericMatrix& mat, const std::vector<size_t>& index_match_rows) {
+std::vector<double> subset_matrix(const NumericMatrix& mat, const std::vector<size_t>& index_match_rows) {
   size_t nb_rows = index_match_rows.size();
   R_xlen_t nb_columns = mat.ncol();
 
-  NumericMatrix result_subset_mat(nb_rows, nb_columns);
+  std::vector<double> result_subset_mat(nb_columns, 0);
 
   for (R_xlen_t j = 0; j < nb_columns; ++j) {
     for (size_t i = 0; i < nb_rows; ++i) {
-      result_subset_mat(i, j) = mat(index_match_rows[i], j);
+      result_subset_mat[j] += mat(index_match_rows[i], j);
     }
+    result_subset_mat[j] /= nb_rows;
   }
 
   return result_subset_mat;
-}
-
-NumericVector col_means(const NumericMatrix& mat) {
-  int nb_columns = mat.ncol();
-  NumericVector out(nb_columns);
-
-  for(int j=0; j < nb_columns; j++ ) {
-    out[j] = mean(mat(_, j));
-  }
-  return out;
 }
 
 // struct WordEmbedding : public Worker {
@@ -128,15 +119,12 @@ NumericMatrix average_vectors(const CharacterVector& keys, const NumericMatrix& 
       }
     }
 
-    NumericVector row_mat(mat.ncol());
     if (return_na || index_match_rows.size() == 0) {
-      row_mat = na_vector;
+      result_mat(i, _) = na_vector;
     } else {
-      NumericMatrix subset_mat = subset_matrix(mat, index_match_rows);
-      row_mat = col_means(subset_mat);
+      NumericVector row_mat = wrap(subset_matrix(mat, index_match_rows));
+      result_mat(i, _) = row_mat;
     }
-
-    result_mat(i, _) = row_mat;
   }
 
   return result_mat;
