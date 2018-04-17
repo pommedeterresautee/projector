@@ -7,7 +7,7 @@
 average_vectors(keys, mat, na_if_unknwown_word)
 }
 \arguments{
-\item{keys}{\link{list} containing ids of embeddings in the matrix. Each slot of the \link{list} is related to a sequence.}
+\item{keys}{\link{character} containing sentence made of words. Words are letters between separated by one or more spaces.}
 
 \item{mat}{\link{matrix} where each row is a an embedding. Each row has a name and keys parameter are names of rows.}
 
