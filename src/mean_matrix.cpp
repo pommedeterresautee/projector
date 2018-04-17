@@ -7,15 +7,32 @@
 using namespace Rcpp;
 using namespace RcppParallel;
 
-inline std::vector<std::string> split_string(const std::string& text){
-  std::vector<std::string> items;
-  std::istringstream iss(text);
-  copy(std::istream_iterator<std::string>(iss),
-       std::istream_iterator<std::string>(),
-       std::back_inserter(items));
 
-  return items;
-}
+// class projector{
+// public:
+//   
+//   fastrtext(): model_loaded(false){
+//     model =  std::unique_ptr<FastText>(new FastText());
+//   }
+//   
+//   ~fastrtext(){
+//     model.reset();
+//   }
+//   
+// private:
+//   std::unique_ptr<FastText> model;
+//   bool model_loaded;
+// }
+// 
+// inline std::vector<std::string> split_string(const std::string& text){
+//   std::vector<std::string> items;
+//   std::istringstream iss(text);
+//   copy(std::istream_iterator<std::string>(iss),
+//        std::istream_iterator<std::string>(),
+//        std::back_inserter(items));
+// 
+//   return items;
+// }
 
 std::vector<double> subset_matrix(const NumericMatrix& mat, const std::vector<size_t>& index_match_rows) {
   size_t nb_rows = index_match_rows.size();
@@ -62,8 +79,8 @@ std::vector<double> subset_matrix(const NumericMatrix& mat, const std::vector<si
 //'
 //' Efficient implementation of a function to average embeddings stored in a [matrix].
 //'
-//' @param keys [character] containing sentence made of words. Words are letters between separated by one or more spaces.
-//' @param mat [matrix] where each row is a an embedding. Each row has a name and keys parameter are names of rows.
+//' @param texts [character] containing sentence made of words. Words are letters between separated by one or more spaces.
+//' @param mat [matrix] where each row is a an embedding. Each row has a name and texts parameter are names of rows.
 //' @param na_if_unknwown_word [TRUE] to fulfill a row with [NA] if one word of the document is unknown, and [FALSE] to only average known vectors
 //' @return a [matrix] of embeddings where each row is related to each slot of the list. When an Id is not found, the full vector related to the sequence is [NA].
 //' @examples
@@ -80,13 +97,13 @@ std::vector<double> subset_matrix(const NumericMatrix& mat, const std::vector<si
 //' word_embeddings <- get_word_vectors(model,
 //'                                     words = head(get_dictionary(model), 2e5))
 //'
-//' average_vectors(strsplit(x = "this function average vector", split = " "), word_embeddings, TRUE)
+//' average_vectors("this function average vector", word_embeddings, TRUE)
 //' }
 //' @export
 // [[Rcpp::export]]
-NumericMatrix average_vectors(const CharacterVector& keys, const NumericMatrix& mat, bool na_if_unknwown_word) {
+NumericMatrix average_vectors(const CharacterVector& texts, const NumericMatrix& mat, bool na_if_unknwown_word) {
 
-  NumericMatrix result_mat(keys.size(), mat.ncol());
+  NumericMatrix result_mat(texts.size(), mat.ncol());
 
   const NumericVector na_vector(mat.ncol(), NumericVector::get_na());
   const CharacterVector row_names_r = rownames(mat);
@@ -97,12 +114,12 @@ NumericMatrix average_vectors(const CharacterVector& keys, const NumericMatrix& 
     map_row_names_position.insert(std::make_pair(row_name, i));
   }
 
-  for (int i = 0; i < keys.size(); i++) {
+  for (int i = 0; i < texts.size(); i++) {
     Rcpp::checkUserInterrupt();
 
     bool return_na = false;
 
-    String selected_rows = keys[i];
+    String selected_rows = texts[i];
     std::vector<std::string> words = split_string(selected_rows);
 
     std::vector<size_t> index_match_rows;

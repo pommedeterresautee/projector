@@ -66,21 +66,21 @@ test_that("save and load", {
 
 test_that("average function", {
   text <- "this function average vector"
-  result1 <- as.numeric(average_vectors(keys = text, mat = word_embeddings, na_if_unknwown_word = TRUE))
+  result1 <- as.numeric(average_vectors(texts = text, mat = word_embeddings, na_if_unknwown_word = TRUE))
   result2 <- colMeans(word_embeddings[which(rownames(word_embeddings) %in% unlist(strsplit(text, split = " ", fixed = TRUE))),])
   expect_equal(result1, result2)
   expect_false(any(is.na(result1)))
 
   text2 <- "this function average vector popopopopo"
-  expect_true(all(is.na(average_vectors(keys = text2, mat = word_embeddings, na_if_unknwown_word = TRUE))))
-  expect_equal(as.numeric(average_vectors(keys = text2, mat = word_embeddings, na_if_unknwown_word = FALSE)), result1)
+  expect_true(all(is.na(average_vectors(texts = text2, mat = word_embeddings, na_if_unknwown_word = TRUE))))
+  expect_equal(as.numeric(average_vectors(texts = text2, mat = word_embeddings, na_if_unknwown_word = FALSE)), result1)
 
   text3 <- "popopopopo fjdklsfjlds"
-  expect_true(all(is.na(average_vectors(keys = text3, mat = word_embeddings, na_if_unknwown_word = FALSE))))
-  expect_true(all(is.na(average_vectors(keys = text3, mat = word_embeddings, na_if_unknwown_word = TRUE))))
+  expect_true(all(is.na(average_vectors(texts = text3, mat = word_embeddings, na_if_unknwown_word = FALSE))))
+  expect_true(all(is.na(average_vectors(texts = text3, mat = word_embeddings, na_if_unknwown_word = TRUE))))
 
   text4 <- rep(text, 500)
-  expect_false(any(is.na(as.numeric(average_vectors(keys = text4, mat = word_embeddings, na_if_unknwown_word = FALSE)))))
+  expect_false(any(is.na(as.numeric(average_vectors(texts = text4, mat = word_embeddings, na_if_unknwown_word = FALSE)))))
 })
 
 test_that("word position", {

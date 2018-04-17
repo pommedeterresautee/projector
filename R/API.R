@@ -86,7 +86,9 @@ get_neighbors_from_free_text <- function(text, annoy_model, word_embeddings_mat,
   assert_that(is.matrix(word_embeddings_mat))
   assert_that(is.count(search_k) | search_k == -1)
   assert_that(is.flag(allow_unknown_word))
-  query_embedding <- average_vectors(keys = text, mat = word_embeddings_mat, na_if_unknwown_word = !allow_unknown_word)
+  query_embedding <- average_vectors(texts = text, 
+                                     mat = word_embeddings_mat, 
+                                     na_if_unknwown_word = !allow_unknown_word)
   assert_that(all(!is.na(query_embedding)))
   l <- annoy_model$getNNsByVectorList(query_embedding, n, -1, TRUE)
   l$text <- annoy_model@dict[l$item + 1]

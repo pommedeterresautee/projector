@@ -4,12 +4,12 @@
 \alias{average_vectors}
 \title{Average vectors}
 \usage{
-average_vectors(keys, mat, na_if_unknwown_word)
+average_vectors(texts, mat, na_if_unknwown_word)
 }
 \arguments{
-\item{keys}{\link{character} containing sentence made of words. Words are letters between separated by one or more spaces.}
+\item{texts}{\link{character} containing sentence made of words. Words are letters between separated by one or more spaces.}
 
-\item{mat}{\link{matrix} where each row is a an embedding. Each row has a name and keys parameter are names of rows.}
+\item{mat}{\link{matrix} where each row is a an embedding. Each row has a name and texts parameter are names of rows.}
 
 \item{na_if_unknwown_word}{\link{TRUE} to fulfill a row with \link{NA} if one word of the document is unknown, and \link{FALSE} to only average known vectors}
 }
@@ -33,6 +33,6 @@ model <- load_model(model_test_path)
 word_embeddings <- get_word_vectors(model,
                                     words = head(get_dictionary(model), 2e5))
 
-average_vectors(strsplit(x = "this function average vector", split = " "), word_embeddings, TRUE)
+average_vectors("this function average vector", word_embeddings, TRUE)
 }
 }

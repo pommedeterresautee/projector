@@ -6,15 +6,15 @@
 using namespace Rcpp;
 
 // average_vectors
-NumericMatrix average_vectors(const CharacterVector& keys, const NumericMatrix& mat, bool na_if_unknwown_word);
-RcppExport SEXP _projector_average_vectors(SEXP keysSEXP, SEXP matSEXP, SEXP na_if_unknwown_wordSEXP) {
+NumericMatrix average_vectors(const CharacterVector& texts, const NumericMatrix& mat, bool na_if_unknwown_word);
+RcppExport SEXP _projector_average_vectors(SEXP textsSEXP, SEXP matSEXP, SEXP na_if_unknwown_wordSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const CharacterVector& >::type keys(keysSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector& >::type texts(textsSEXP);
     Rcpp::traits::input_parameter< const NumericMatrix& >::type mat(matSEXP);
     Rcpp::traits::input_parameter< bool >::type na_if_unknwown_word(na_if_unknwown_wordSEXP);
-    rcpp_result_gen = Rcpp::wrap(average_vectors(keys, mat, na_if_unknwown_word));
+    rcpp_result_gen = Rcpp::wrap(average_vectors(texts, mat, na_if_unknwown_word));
     return rcpp_result_gen;
 END_RCPP
 }
