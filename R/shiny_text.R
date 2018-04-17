@@ -70,15 +70,17 @@ shiny_text <- function(annoy_model, word_embeddings_mat, normalize_text) {
 
   server <- function(input, output, session) {
 
+    projector_instance <- get_projector_instance(word_embeddings = word_embeddings_mat,
+                                                 na_if_unknwown_word = TRUE)
+
     output$table <- renderTable({
       query_normalized <- normalize_text(input$query_input)
       assert_that(is.string(query_normalized))
       l <- try(get_neighbors_from_free_text(text = query_normalized,
                                             annoy_model = annoy_model,
-                                            word_embeddings_mat = word_embeddings_mat,
                                             n = input$top_n,
-                                            search_k = -1,
-                                            allow_unknown_word = FALSE), silent = TRUE)
+                                            projector_instance = projector_instance,
+                                            search_k = -1), silent = TRUE)
       if (class(l) != "try-error") {
         data.table(query = l$text,
                    distance = l$distance)

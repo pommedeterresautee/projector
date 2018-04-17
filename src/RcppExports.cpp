@@ -5,22 +5,11 @@
 
 using namespace Rcpp;
 
-// average_vectors
-NumericMatrix average_vectors(const CharacterVector& texts, const NumericMatrix& mat, bool na_if_unknwown_word);
-RcppExport SEXP _projector_average_vectors(SEXP textsSEXP, SEXP matSEXP, SEXP na_if_unknwown_wordSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const CharacterVector& >::type texts(textsSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type mat(matSEXP);
-    Rcpp::traits::input_parameter< bool >::type na_if_unknwown_word(na_if_unknwown_wordSEXP);
-    rcpp_result_gen = Rcpp::wrap(average_vectors(texts, mat, na_if_unknwown_word));
-    return rcpp_result_gen;
-END_RCPP
-}
+
+RcppExport SEXP _rcpp_module_boot_PROJECTOR_MODULE();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_projector_average_vectors", (DL_FUNC) &_projector_average_vectors, 3},
+    {"_rcpp_module_boot_PROJECTOR_MODULE", (DL_FUNC) &_rcpp_module_boot_PROJECTOR_MODULE, 0},
     {NULL, NULL, 0}
 };
 

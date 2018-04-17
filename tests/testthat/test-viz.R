@@ -65,22 +65,28 @@ test_that("save and load", {
 })
 
 test_that("average function", {
+  m <- projector:::get_projector_instance(word_embeddings = word_embeddings,
+                                          na_if_unknwown_word = TRUE)
   text <- "this function average vector"
-  result1 <- as.numeric(average_vectors(texts = text, mat = word_embeddings, na_if_unknwown_word = TRUE))
+  result1 <- as.numeric(m$average_vectors(texts = text))
   result2 <- colMeans(word_embeddings[which(rownames(word_embeddings) %in% unlist(strsplit(text, split = " ", fixed = TRUE))),])
   expect_equal(result1, result2)
   expect_false(any(is.na(result1)))
 
   text2 <- "this function average vector popopopopo"
-  expect_true(all(is.na(average_vectors(texts = text2, mat = word_embeddings, na_if_unknwown_word = TRUE))))
-  expect_equal(as.numeric(average_vectors(texts = text2, mat = word_embeddings, na_if_unknwown_word = FALSE)), result1)
+  expect_true(all(is.na(m$average_vectors(texts = text2))))
+  m$set_unknown_word(FALSE)
+  expect_equal(as.numeric(m$average_vectors(texts = text2)), result1)
 
   text3 <- "popopopopo fjdklsfjlds"
-  expect_true(all(is.na(average_vectors(texts = text3, mat = word_embeddings, na_if_unknwown_word = FALSE))))
-  expect_true(all(is.na(average_vectors(texts = text3, mat = word_embeddings, na_if_unknwown_word = TRUE))))
+  m$set_unknown_word(FALSE)
+  expect_true(all(is.na(m$average_vectors(texts = text3))))
+  m$set_unknown_word(TRUE)
+  expect_true(all(is.na(m$average_vectors(texts = text3))))
 
   text4 <- rep(text, 500)
-  expect_false(any(is.na(as.numeric(average_vectors(texts = text4, mat = word_embeddings, na_if_unknwown_word = FALSE)))))
+  m$set_unknown_word(FALSE)
+  expect_false(any(is.na(as.numeric(m$average_vectors(texts = text4)))))
 })
 
 test_that("word position", {
@@ -92,6 +98,7 @@ test_that("retrieve neighboor", {
   number_neighbors <- 10
 
   t1 <- projector:::get_neighbors_from_text(text = selected_word, annoy_model = annoy_model, n = number_neighbors, search_k = -1)
-  t2 <- projector:::get_neighbors_from_free_text(text = selected_word, annoy_model = annoy_model, n = number_neighbors, search_k = -1, word_embeddings_mat = word_embeddings, allow_unknown_word = FALSE)
+  m <- projector:::get_projector_instance(word_embeddings = word_embeddings, na_if_unknwown_word = TRUE)
+  t2 <- projector:::get_neighbors_from_free_text(text = selected_word, annoy_model = annoy_model, n = number_neighbors, search_k = -1, projector_instance = m)
   expect_equivalent(t1, t2)
 })

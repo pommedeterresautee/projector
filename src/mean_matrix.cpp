@@ -7,11 +7,11 @@
 using namespace Rcpp;
 using namespace RcppParallel;
 
-
-class Projector{
+//' @export projector
+class projector{
 public:
 
-  Projector(const NumericMatrix& embeddings, bool na_if_unknwown_word_p) {
+  projector(const NumericMatrix& embeddings, bool na_if_unknwown_word_p) {
 
 
     nb_columns = embeddings.ncol();
@@ -69,6 +69,10 @@ public:
     }
 
     return result_mat;
+  }
+
+  void set_unknown_word(bool na_if_unknwown_word_p) {
+    na_if_unknwown_word = na_if_unknwown_word_p;
   }
 
 private:
@@ -130,36 +134,43 @@ private:
 //   }
 // };
 
-//' Average vectors
-//'
-//' Efficient implementation of a function to average embeddings stored in a [matrix].
-//'
-//' @param texts [character] containing sentence made of words. Words are letters between separated by one or more spaces.
-//' @param mat [matrix] where each row is a an embedding. Each row has a name and texts parameter are names of rows.
-//' @param na_if_unknwown_word [TRUE] to fulfill a row with [NA] if one word of the document is unknown, and [FALSE] to only average known vectors
-//' @return a [matrix] of embeddings where each row is related to each slot of the list. When an Id is not found, the full vector related to the sequence is [NA].
-//' @examples
-//' if (interactive()){
-//' # This example should be run with a higher quality model
-//' # than the one embedded in fastrtext
-//' library(projector)
-//' library(fastrtext)
-//'
-//' model_test_path <- system.file("extdata",
-//'                                "model_unsupervised_test.bin",
-//'                                package = "fastrtext")
-//' model <- load_model(model_test_path)
-//' word_embeddings <- get_word_vectors(model,
-//'                                     words = head(get_dictionary(model), 2e5))
-//'
-//' average_vectors("this function average vector", word_embeddings, TRUE)
-//' }
-//' @export
-// [[Rcpp::export]]
-NumericMatrix average_vectors(const CharacterVector& texts, const NumericMatrix& mat, bool na_if_unknwown_word) {
+// //' Average vectors
+// //'
+// //' Efficient implementation of a function to average embeddings stored in a [matrix].
+// //'
+// //' @param texts [character] containing sentence made of words. Words are letters between separated by one or more spaces.
+// //' @param mat [matrix] where each row is a an embedding. Each row has a name and texts parameter are names of rows.
+// //' @param na_if_unknwown_word [TRUE] to fulfill a row with [NA] if one word of the document is unknown, and [FALSE] to only average known vectors
+// //' @return a [matrix] of embeddings where each row is related to each slot of the list. When an Id is not found, the full vector related to the sequence is [NA].
+// //' @examples
+// //' if (interactive()){
+// //' # This example should be run with a higher quality model
+// //' # than the one embedded in fastrtext
+// //' library(projector)
+// //' library(fastrtext)
+// //'
+// //' model_test_path <- system.file("extdata",
+// //'                                "model_unsupervised_test.bin",
+// //'                                package = "fastrtext")
+// //' model <- load_model(model_test_path)
+// //' word_embeddings <- get_word_vectors(model,
+// //'                                     words = head(get_dictionary(model), 2e5))
+// //'
+// //' average_vectors("this function average vector", word_embeddings, TRUE)
+// //' }
+// //' @export
+// // [[Rcpp::export]]
+// NumericMatrix average_vectors(const CharacterVector& texts, const NumericMatrix& mat, bool na_if_unknwown_word) {
+//
+//   Projector proj(mat, na_if_unknwown_word);
+//
+//   return proj.average_vectors(texts);
+// }
 
-  Projector proj(mat, na_if_unknwown_word);
 
-  return proj.average_vectors(texts);
+RCPP_MODULE(PROJECTOR_MODULE) {
+  class_<projector>("projector")
+  .constructor<NumericMatrix, bool>("Tools related to vectors")
+  .method("average_vectors", &projector::average_vectors, "Average vectors")
+  .method("set_unknown_word", &projector::set_unknown_word, "Change behaviour when the word is unknown");
 }
-
