@@ -322,9 +322,5 @@ load_annoy_model <- function(path_annoy, path_dictionary) {
   annoy_model
 }
 
-#' @useDynLib projector
-#' @importFrom Rcpp sourceCpp
-#' @importFrom RcppParallel RcppParallelLibs
-NULL
 
 globalVariables(c("position"))
