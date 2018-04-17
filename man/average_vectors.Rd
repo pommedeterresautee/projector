@@ -4,8 +4,7 @@
 \alias{average_vectors}
 \title{Average vectors}
 \usage{
-average_vectors(keys, mat, na_if_unknwown_word, threads = 4L,
-  verbose = FALSE)
+average_vectors(keys, mat, na_if_unknwown_word)
 }
 \arguments{
 \item{keys}{\link{list} containing ids of embeddings in the matrix. Each slot of the \link{list} is related to a sequence.}

@@ -9,8 +9,8 @@ Description: Display dense vector representation of texts on a 2D plan to better
   It also includes an interactive application to change dynamically the pivot text.
 URL: https://github.com/pommedeterresautee/projector
 BugReports: https://github.com/pommedeterresautee/projector/issues
-Depends: R (>= 3.3), Rcpp (>= 0.9.4), RcppProgress (>= 0.1)
-LinkingTo: Rcpp, RcppProgress
+Depends: R (>= 3.3), Rcpp (>= 0.9.4)
+LinkingTo: Rcpp, RcppParallel
 Imports: methods,
   RcppAnnoy (>= 0.0.10),
   data.table,
@@ -22,7 +22,8 @@ Imports: methods,
   shiny,
   shinythemes,
   shinyjs,
-  shinymaterial
+  shinymaterial,
+  RcppParallel
 Suggests: knitr,
   testthat,
   covr,
@@ -32,3 +33,4 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)
+SystemRequirements: GNU make

@@ -1,23 +1,31 @@
 // [[Rcpp::plugins("cpp11")]]
-// [[Rcpp::plugins(openmp) ]]
-// [[Rcpp::depends(RcppProgress)]]
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 #include <Rcpp.h>
-#include <progress.hpp>
-using namespace Rcpp;
+#include <RcppParallel.h>
+#include<map>
 
-NumericMatrix subset_matrix(const NumericMatrix& mat, const std::vector<double>& index_match_rows) {
-  R_xlen_t nb_rows = index_match_rows.size();
+using namespace Rcpp;
+using namespace RcppParallel;
+
+inline std::vector<std::string> split_string(const std::string& text){
+  std::vector<std::string> items;
+  std::istringstream iss(text);
+  copy(std::istream_iterator<std::string>(iss),
+       std::istream_iterator<std::string>(),
+       std::back_inserter(items));
+
+  return items;
+}
+
+NumericMatrix subset_matrix(const NumericMatrix& mat, const std::vector<size_t>& index_match_rows) {
+  size_t nb_rows = index_match_rows.size();
   R_xlen_t nb_columns = mat.ncol();
 
   NumericMatrix result_subset_mat(nb_rows, nb_columns);
 
-  for (R_xlen_t j = 0; j < nb_columns; j++) {
-    for (R_xlen_t i = 0; i < nb_rows; i++) {
-      result_subset_mat(i, j) = mat(index_match_rows[i] - 1, j);
+  for (R_xlen_t j = 0; j < nb_columns; ++j) {
+    for (size_t i = 0; i < nb_rows; ++i) {
+      result_subset_mat(i, j) = mat(index_match_rows[i], j);
     }
   }
 
@@ -33,6 +41,31 @@ NumericVector col_means(const NumericMatrix& mat) {
   }
   return out;
 }
+
+// struct WordEmbedding : public Worker {
+//   // source matrix
+//   const RMatrix<double> input;
+//
+//   RMatrix<double> word_embeding;
+//
+//   // destination matrix
+//   RMatrix<double> output;
+//
+//   // initialize with source and destination
+//   WordEmbedding(const NumericMatrix& input,
+//                 const List& keys,
+//                 const NumericMatrix& word_embedding,
+//                 NumericMatrix output)
+//     : input(input), word_embeding(word_embedding), output(output) {}
+//
+//   // take the square root of the range of elements requested
+//   void operator()(std::size_t begin, std::size_t end) {
+//     // std::transform(input.begin() + begin,
+//     //                input.begin() + end,
+//     //                output.begin() + begin,
+//     //                ::sqrt);
+//   }
+// };
 
 //' Average vectors
 //'
@@ -60,43 +93,38 @@ NumericVector col_means(const NumericMatrix& mat) {
 //' }
 //' @export
 // [[Rcpp::export]]
-NumericMatrix average_vectors(const List& keys, const NumericMatrix& mat, bool na_if_unknwown_word, int threads=4, bool verbose=false) {
-  #ifdef _OPENMP
-    if (threads > 0) omp_set_num_threads( threads );
-    if (verbose) {
-      REprintf("Number of threads=%i\n", omp_get_max_threads());
-    }
-  #endif
+NumericMatrix average_vectors(const CharacterVector& keys, const NumericMatrix& mat, bool na_if_unknwown_word) {
 
   NumericMatrix result_mat(keys.size(), mat.ncol());
 
   const NumericVector na_vector(mat.ncol(), NumericVector::get_na());
-  const CharacterVector row_names = rownames(mat);
+  const CharacterVector row_names_r = rownames(mat);
 
-  // usefull for user interruption
-  Progress p(0, false);
+  std::map<std::string, int > map_row_names_position;
+  for (int i = 0; i < row_names_r.size(); ++i) {
+    String row_name = row_names_r[i];
+    map_row_names_position.insert(std::make_pair(row_name, i));
+  }
 
-  // #pragma omp parallel for schedule(dynamic)
   for (int i = 0; i < keys.size(); i++) {
-    if (Progress::check_abort()) {
-      throw std::invalid_argument("User interruption");
-    }
+    Rcpp::checkUserInterrupt();
 
-    CharacterVector selected_rows = keys[i];
-    std::vector<double> index_match_rows = Rcpp::as<std::vector<double> >(match(selected_rows, row_names));
     bool return_na = false;
 
-    // https://stackoverflow.com/a/31329841/817158
-    for (auto it = index_match_rows.begin(); it != index_match_rows.end(); /* NOTHING */) {
-      if(std::isnan(*it)) {
+    String selected_rows = keys[i];
+    std::vector<std::string> words = split_string(selected_rows);
+
+    std::vector<size_t> index_match_rows;
+    std::map<std::string, int >::iterator p;
+    for (int i = 0; i < words.size(); ++i) {
+      p = map_row_names_position.find(words[i]);
+      if(p != map_row_names_position.end()) {
+        index_match_rows.push_back(p->second);
+      } else {
         if (na_if_unknwown_word) {
           return_na = true;
           break;
-        } else {
-          it = index_match_rows.erase(it);
         }
-      } else {
-        ++it;
       }
     }
 
@@ -108,10 +136,7 @@ NumericMatrix average_vectors(const List& keys, const NumericMatrix& mat, bool n
       row_mat = col_means(subset_mat);
     }
 
-    // #pragma omp critical
-    // {
     result_mat(i, _) = row_mat;
-    // }
   }
 
   return result_mat;

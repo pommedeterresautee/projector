@@ -26,7 +26,7 @@
 #' average_vectors(strsplit(x = "this function average vector", split = " "), word_embeddings, TRUE)
 #' }
 #' @export
-average_vectors <- function(keys, mat, na_if_unknwown_word, threads = 4L, verbose = FALSE) {
-    .Call('_projector_average_vectors', PACKAGE = 'projector', keys, mat, na_if_unknwown_word, threads, verbose)
+average_vectors <- function(keys, mat, na_if_unknwown_word) {
+    .Call('_projector_average_vectors', PACKAGE = 'projector', keys, mat, na_if_unknwown_word)
 }
 
