@@ -12,29 +12,40 @@ class Projector{
 public:
 
   Projector(const NumericMatrix& embeddings, bool na_if_unknwown_word_p) {
-    mat = embeddings;
-    na_vector = NumericVector(mat.ncol(), NumericVector::get_na());
-    row_names_r = rownames(mat);
+
+
+    nb_columns = embeddings.ncol();
+    CharacterVector row_names_r = rownames(embeddings);
+    na_vector = NumericVector(nb_columns, NumericVector::get_na());
     na_if_unknwown_word = na_if_unknwown_word_p;
-    
+
+    mat = std::vector<double>(embeddings.ncol() * embeddings.nrow() );
+
+    for (R_xlen_t i = 0; i < embeddings.nrow(); ++i) {
+      for (R_xlen_t j = 0; j < embeddings.ncol(); ++j) {
+        mat[i * nb_columns + j] = embeddings(i, j);
+      }
+    }
+
+
     for (int i = 0; i < row_names_r.size(); ++i) {
       String row_name = row_names_r[i];
       map_row_names_position.insert(std::make_pair(row_name, i));
     }
   }
-  
+
   NumericMatrix average_vectors(const CharacterVector& texts) {
-    
-    NumericMatrix result_mat(texts.size(), mat.ncol());
-    
+
+    NumericMatrix result_mat(texts.size(), nb_columns);
+
     for (int i = 0; i < texts.size(); i++) {
       Rcpp::checkUserInterrupt();
-      
+
       bool return_na = false;
-      
+
       String selected_rows = texts[i];
       std::vector<std::string> words = split_string(selected_rows);
-      
+
       std::vector<size_t> index_match_rows;
       std::map<std::string, int >::iterator p;
       for (int i = 0; i < words.size(); ++i) {
@@ -48,48 +59,47 @@ public:
           }
         }
       }
-      
+
       if (return_na || index_match_rows.size() == 0) {
         result_mat(i, _) = na_vector;
       } else {
-        NumericVector row_mat = wrap(subset_matrix(mat, index_match_rows));
+        NumericVector row_mat = wrap(subset_matrix(index_match_rows));
         result_mat(i, _) = row_mat;
       }
     }
-    
+
     return result_mat;
   }
 
 private:
-  NumericMatrix mat;
+  std::vector<double> mat;
   NumericVector na_vector;
-  CharacterVector row_names_r;
   std::map<std::string, int > map_row_names_position;
   bool na_if_unknwown_word;
-  
-  inline std::vector<std::string> split_string(const std::string& text){
+  R_xlen_t nb_columns;
+
+  std::vector<std::string> split_string(const std::string& text) const {
     std::vector<std::string> items;
     std::istringstream iss(text);
     copy(std::istream_iterator<std::string>(iss),
          std::istream_iterator<std::string>(),
          std::back_inserter(items));
-    
+
     return items;
   }
-  
-  std::vector<double> subset_matrix(const NumericMatrix& mat, const std::vector<size_t>& index_match_rows) {
+
+  std::vector<double> subset_matrix(const std::vector<size_t>& index_match_rows) const {
     size_t nb_rows = index_match_rows.size();
-    R_xlen_t nb_columns = mat.ncol();
-    
+
     std::vector<double> result_subset_mat(nb_columns, 0);
-    
+
     for (R_xlen_t j = 0; j < nb_columns; ++j) {
       for (size_t i = 0; i < nb_rows; ++i) {
-        result_subset_mat[j] += mat(index_match_rows[i], j);
+        result_subset_mat[j] += mat[j + index_match_rows[i] * nb_columns];
       }
       result_subset_mat[j] /= nb_rows;
     }
-    
+
     return result_subset_mat;
   }
 };
