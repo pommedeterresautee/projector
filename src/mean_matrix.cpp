@@ -1,7 +1,7 @@
 // [[Rcpp::plugins("cpp11")]]
 
 #include <Rcpp.h>
-#include <map>
+#include <unordered_map>
 
 using namespace Rcpp;
 typedef std::vector<double> VectorD;
