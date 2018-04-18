@@ -12,6 +12,10 @@ public:
 
   projector(const NumericMatrix& embeddings, bool na_if_unknwown_word_p) {
 
+    if (embeddings.length() == 0) {
+      stop("empty embedding");
+    }
+
     nb_columns = embeddings.ncol();
     CharacterVector row_names_r = rownames(embeddings);
     na_vector = NumericVector(nb_columns, NumericVector::get_na());
@@ -25,7 +29,6 @@ public:
       }
     }
 
-
     for (int row_index = 0; row_index < row_names_r.size(); ++row_index) {
       String row_name = row_names_r[row_index];
       map_row_names_position.insert(std::make_pair(row_name, row_index));
@@ -34,10 +37,16 @@ public:
 
   NumericMatrix average_vectors(const CharacterVector& texts) {
 
+    if (texts.length() == 0) {
+      stop("empty text vector");
+    }
+
     NumericMatrix result_mat(texts.size(), nb_columns);
 
     for (int text_index = 0; text_index < texts.size(); text_index++) {
-      Rcpp::checkUserInterrupt();
+      if (text_index % 100 == 0) {
+        checkUserInterrupt();
+      }
 
       bool return_na = false;
 
