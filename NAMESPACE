@@ -2,6 +2,9 @@
 
 export("%where%")
 export(get_annoy_model)
+export(get_neighbors_from_text)
+export(get_neighbors_from_vector)
+export(get_vector_from_text)
 export(interactive_embedding_exploration)
 export(load_annoy_model)
 export(plot_texts)

@@ -56,7 +56,7 @@ get_annoy_model <- function(vectors, number_trees, verbose = FALSE) {
 #' @param n number of elements to retrieve
 #' @param search_k number of nodes to search in (Annoy parameter). Higher is better and slower.
 #' @importFrom assertthat assert_that is.count is.string
-#' @keywords internal
+#' @export
 get_neighbors_from_text <- function(text, annoy_model, n, search_k) {
   assert_that(is.string(text))
   assert_that(is.count(n))
@@ -66,6 +66,42 @@ get_neighbors_from_text <- function(text, annoy_model, n, search_k) {
   l <- annoy_model$getNNsByItemList(position, n, search_k, TRUE)
   l$text <- annoy_model@dict[l$item + 1]
   l
+}
+
+#' Retrieve the most closest vector representation of a text provided itself as a vector
+#'
+#' Use Annoy to rapidly retrieve the `n` most closest representation of a text.
+#'
+#' @param vec [numeric] containing the pivot vector
+#' @param annoy_model [RcppAnnoy] model
+#' @param n number of elements to retrieve
+#' @param search_k number of nodes to search in (Annoy parameter). Higher is better and slower.
+#' @importFrom assertthat assert_that is.count
+#' @export
+get_neighbors_from_vector <- function(vec, annoy_model, n, search_k) {
+  assert_that(is.numeric(vec))
+  assert_that(is.count(n))
+  assert_that(is.count(search_k) | search_k == -1)
+  assert_that(length(annoy_model$getItemsVector(0)) == length(vec))
+
+  l <- annoy_model$getNNsByVectorList(vec, n, search_k, TRUE)
+  l$text <- annoy_model@dict[l$item + 1]
+  l
+}
+
+#' Retrieve vector representation of a text
+#'
+#' Use dictionary to retrieve the vector stored in annoy.
+#'
+#' @param text [character] containing the text
+#' @param annoy_model [RcppAnnoy] model
+#' @importFrom assertthat assert_that is.string
+#' @export
+get_vector_from_text <- function(text, annoy_model) {
+  assert_that(is.string(text))
+  position <- get_word_position(text, annoy_model)
+  assert_that(is.count(position) | position == 0, msg = paste("Text not included in provided embeddings:", text))
+  annoy_model$getItemsVector(position)
 }
 
 #' Retrieve the most closest vector representation of a free text
@@ -110,6 +146,7 @@ get_projector_instance <- function(word_embeddings, na_if_unknwown_word) {
 #' @param annoy_model [RcppAnnoy] model
 #' @keywords internal
 get_word_position <- function(word, annoy_model) {
+  # TODO replace by %where%
   annoy_model@dict_position[word, position]
 }
 
