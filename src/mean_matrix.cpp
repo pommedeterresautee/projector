@@ -17,7 +17,6 @@ public:
     }
 
     nb_columns = embeddings.ncol();
-    CharacterVector row_names_r = rownames(embeddings);
     na_vector = NumericVector(nb_columns, NumericVector::get_na());
     na_if_unknwown_word = na_if_unknwown_word_p;
 
@@ -29,13 +28,23 @@ public:
       }
     }
 
-    for (int row_index = 0; row_index < row_names_r.size(); ++row_index) {
-      String row_name = row_names_r[row_index];
-      map_row_names_position.insert(std::make_pair(row_name, row_index));
+    CharacterVector row_names_r = rownames(embeddings);
+    init_map(row_names_r);
+  }
+
+  projector(const CharacterVector& row_names_r) {
+    if (row_names_r.length() == 0) {
+      stop("empty row names");
     }
+    na_if_unknwown_word = false;
+    init_map(row_names_r);
   }
 
   NumericMatrix average_vectors(const CharacterVector& texts) {
+
+    if (word_embeddings.size() == 0) {
+      stop("Init embedding before using this instance");
+    }
 
     if (texts.length() == 0) {
       stop("empty text vector");
@@ -50,22 +59,9 @@ public:
 
       bool return_na = false;
 
-      String selected_rows = texts[text_index];
-      std::vector<std::string> words = split_string(selected_rows);
-
+      std::vector<std::string> words = split_string(static_cast<String>(texts[text_index]));
       std::vector<size_t> index_match_rows;
-      std::map<std::string, int >::iterator p;
-      for (int word_index = 0; word_index < words.size(); ++word_index) {
-        p = map_row_names_position.find(words[word_index]);
-        if(p != map_row_names_position.end()) {
-          index_match_rows.push_back(p->second);
-        } else {
-          if (na_if_unknwown_word) {
-            return_na = true;
-            break;
-          }
-        }
-      }
+      search_position(words, index_match_rows, return_na, na_if_unknwown_word);
 
       if (return_na || index_match_rows.size() == 0) {
         result_mat(text_index, _) = na_vector;
@@ -76,6 +72,25 @@ public:
     }
 
     return result_mat;
+  }
+
+  IntegerVector get_position(const CharacterVector& original_texts) {
+    if (original_texts.length() == 0) {
+      stop("empty text vector");
+    }
+
+    std::vector<std::string> texts;
+    std::transform(original_texts.begin(), original_texts.end(), std::back_inserter(texts), [](const String& text) { return text;});
+
+    bool return_na = false;
+    std::vector<size_t> index_match_rows;
+    search_position(texts, index_match_rows, return_na, false);
+    std::transform(index_match_rows.begin(),
+                   index_match_rows.end(),
+                   index_match_rows.begin(),
+                   [](int i) { return i + 1;});
+
+    return wrap(index_match_rows);
   }
 
   void set_unknown_word(bool na_if_unknwown_word_p) {
@@ -113,11 +128,34 @@ private:
 
     return result_subset_mat;
   }
+
+  void search_position(const std::vector<std::string>& searched_words, std::vector<size_t>& index_match_rows, bool& return_na, bool break_if_unknwown_word) {
+    std::map<std::string, int >::iterator p;
+    for (int word_index = 0; word_index < searched_words.size(); ++word_index) {
+      p = map_row_names_position.find(searched_words[word_index]);
+      if(p != map_row_names_position.end()) {
+        index_match_rows.push_back(p->second);
+      } else {
+        if (break_if_unknwown_word) {
+          return_na = true;
+          break;
+        }
+      }
+    }
+  }
+
+  void init_map(const CharacterVector& row_names_r) {
+    for (int row_index = 0; row_index < row_names_r.size(); ++row_index) {
+      map_row_names_position.insert(std::make_pair(static_cast<String>(row_names_r[row_index]), row_index));
+    }
+  }
 };
 
 RCPP_MODULE(PROJECTOR_MODULE) {
   class_<projector>("projector")
   .constructor<NumericMatrix, bool>("Tools related to vectors")
+  .constructor<CharacterVector>("Tools related to vectors")
   .method("average_vectors", &projector::average_vectors, "Average vectors")
-  .method("set_unknown_word", &projector::set_unknown_word, "Change behaviour when the word is unknown");
+  .method("set_unknown_word", &projector::set_unknown_word, "Change behaviour when the word is unknown")
+  .method("get_position", &projector::get_position, "get word position in the character vector");
 }
