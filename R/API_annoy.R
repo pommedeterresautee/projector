@@ -173,6 +173,7 @@ get_word_position <- function(word, annoy_model) {
 #' Save the content of the model in two files:
 #' * the [RcppAnnoy] model
 #' * the dictionary ([character] containing texts)
+#' 
 #' @param annoy_model [RcppAnnoy] model
 #' @param path_annoy path for the [RcppAnnoy] model
 #' @param path_dictionary path for the dictionary ([character] containing texts)
@@ -195,6 +196,9 @@ save_annoy_model <- function(annoy_model, path_annoy, path_dictionary) {
 #' Load the content of the model from two files:
 #' * the [RcppAnnoy] model
 #' * the dictionary ([character] containing texts)
+#' 
+#' Look at [get_annoy_model] documentation for an example.
+#' 
 #' @param path_annoy path to the [RcppAnnoy] model
 #' @param path_dictionary path to the dictionary ([character] containing texts)
 #' @importFrom assertthat assert_that is.string

@@ -5,10 +5,23 @@
 
 using namespace Rcpp;
 
+// add_prefix
+CharacterVector add_prefix(const CharacterVector& texts, CharacterVector prefix);
+RcppExport SEXP _projector_add_prefix(SEXP textsSEXP, SEXP prefixSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const CharacterVector& >::type texts(textsSEXP);
+    Rcpp::traits::input_parameter< CharacterVector >::type prefix(prefixSEXP);
+    rcpp_result_gen = Rcpp::wrap(add_prefix(texts, prefix));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_PROJECTOR_MODULE();
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_projector_add_prefix", (DL_FUNC) &_projector_add_prefix, 2},
     {"_rcpp_module_boot_PROJECTOR_MODULE", (DL_FUNC) &_rcpp_module_boot_PROJECTOR_MODULE, 0},
     {NULL, NULL, 0}
 };

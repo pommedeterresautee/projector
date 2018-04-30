@@ -2,7 +2,7 @@
 % Please edit documentation in R/API_annoy.R
 \name{get_projector_instance}
 \alias{get_projector_instance}
-\title{Get instance of projector}
+\title{Get instance of projector for embedding averaging}
 \usage{
 get_projector_instance(word_embeddings, na_if_unknwown_word)
 }
@@ -12,6 +12,7 @@ get_projector_instance(word_embeddings, na_if_unknwown_word)
 \item{word_embeddings_mat}{a \link{matrix} containing word embeddings.}
 }
 \description{
-Generate an instance of projector tool
+Generate an instance of projector tool dedicated to embedding averaging.
+Not to be used with
 }
 \keyword{internal}

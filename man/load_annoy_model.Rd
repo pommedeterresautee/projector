@@ -18,3 +18,6 @@ Load the content of the model from two files:
 \item the dictionary (\link{character} containing texts)
 }
 }
+\details{
+Look at \link{get_annoy_model} documentation for an example.
+}
