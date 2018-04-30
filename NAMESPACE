@@ -2,6 +2,7 @@
 
 export("%where%")
 export(get_annoy_model)
+export(get_neighbors_from_free_text)
 export(get_neighbors_from_text)
 export(get_neighbors_from_vector)
 export(get_vector_from_text)

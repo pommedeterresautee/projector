@@ -16,4 +16,3 @@
   }
   p_index$get_position(items)
 }
-
