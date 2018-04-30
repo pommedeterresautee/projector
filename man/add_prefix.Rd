@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{add_prefix}
 \alias{add_prefix}
-\title{Add a word prefix}
+\title{Add a prefix to each word}
 \usage{
 add_prefix(texts, prefix)
 }
@@ -11,9 +11,13 @@ add_prefix(texts, prefix)
 
 \item{prefix}{a unit \link{character} containing the prefix to add (length == 1)}
 }
+\value{
+\link{character} with prefixed words.
+}
 \description{
 Add a custom prefix to each word of a a line.
-Number of spaces are normalized.
+Number of spaces are normalized in the output.
+Code in C++ (efficient).
 }
 \examples{
 add_prefix(c("this is a test", "this is another    test"), "#")
