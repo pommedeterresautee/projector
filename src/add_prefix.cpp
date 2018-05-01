@@ -32,7 +32,7 @@ CharacterVector add_prefix(const CharacterVector& texts, CharacterVector prefix)
                  result.begin(),
                  [&prefixS](String line) { return add_pr(line, prefixS) ;});
 
-  return wrap(result);
+  return result;
 }
 
 std::string add_pr(const std::string& line, const std::string& prefix) {
