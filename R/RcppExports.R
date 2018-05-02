@@ -8,7 +8,7 @@
 #' Code in C++ (efficient).
 #'
 #' @param texts a [character] containing the original text
-#' @param prefix a unit [character] containing the prefix to add (length == 1)
+#' @param unit [character] containing the prefix to add (length == 1) or [character] with same length than texts
 #' @return [character] with prefixed words.
 #' @examples
 #' add_prefix(c("this is a test", "this is another    test"), "#")

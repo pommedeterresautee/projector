@@ -12,7 +12,7 @@ std::string add_pr(const std::string& line, const std::string& prefix);
 //' Code in C++ (efficient).
 //'
 //' @param texts a [character] containing the original text
-//' @param prefix a unit [character] containing the prefix to add (length == 1)
+//' @param unit [character] containing the prefix to add (length == 1) or [character] with same length than texts
 //' @return [character] with prefixed words.
 //' @examples
 //' add_prefix(c("this is a test", "this is another    test"), "#")
@@ -20,18 +20,26 @@ std::string add_pr(const std::string& line, const std::string& prefix);
 // [[Rcpp::export]]
 CharacterVector add_prefix(const CharacterVector& texts, CharacterVector prefix) {
   
-  if (prefix.size() != 1) {
-    stop("prefix should be a single string");
+  const bool unique_prefix = prefix.size() == 1;
+  
+  if (!unique_prefix && prefix.size() != texts.size()) {
+    stop("prefix should be a single string or the same size than text");
   }
   
-  const std::string prefixS = as<std::string>(prefix[0]);
+  std::string current_prefix;
+  
+  if (unique_prefix) {
+    current_prefix = as<std::string>(prefix[0]);
+  }
+  
   CharacterVector result(texts.size());
   
-  std::transform(texts.begin(), 
-                 texts.end(), 
-                 result.begin(), 
-                 [&](String line) { return add_pr(line, prefixS) ;});
-  
+  for (int i = 0; i < texts.size(); ++i) {
+    if (!unique_prefix) {
+      current_prefix = as<std::string>(prefix[i]);
+    }
+    result[i] = add_pr(as<std::string>(texts[i]), current_prefix);
+  }
   return wrap(result);
 }
 
