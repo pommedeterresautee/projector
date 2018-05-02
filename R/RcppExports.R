@@ -2,9 +2,9 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' Add a prefix to each word
-#' 
+#'
 #' Add a custom prefix to each word of a a line.
-#' Number of spaces are normalized in the output.
+#' Apply it even if the precedent the word is preceded by a punctuation.
 #' Code in C++ (efficient).
 #'
 #' @param texts a [character] containing the original text

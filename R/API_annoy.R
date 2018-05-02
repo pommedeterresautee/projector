@@ -31,26 +31,26 @@ get_annoy_model <- function(vectors, number_trees, verbose = FALSE) {
   assert_that(is.matrix(vectors))
   annoy_model <- new(AnnoyAngular, ncol(vectors))
   annoy_model$setVerbose(verbose)
-  
+
   for (i in seq(nrow(vectors))) {
     annoy_model$addItem(i - 1, vectors[i,])
   }
   annoy_model$build(number_trees)
   attr(annoy_model, "dict") <- rownames(vectors)
-  
+
   # don't set the key now to not reorder the dict
   dict_position <- data.table("query" = annoy_model@dict)
   set(x = dict_position, j = "position", value = seq(annoy_model@dict) - 1)
   setkeyv(x = dict_position, cols = "query")
   attr(annoy_model, "dict_position") <- dict_position
-  
+
   annoy_model
 }
 
 #' Retrieve the most closest vector representation of an indexed text
 #'
 #' Use [RcppAnnoy] to rapidly retrieve the `n` most closest representation of a text.
-#' The text has to be already indexed in [RcppAnnoy]. 
+#' The text has to be already indexed in [RcppAnnoy].
 #' If it is not the case, use [get_neighbors_from_free_text].
 #'
 #' @param text [character] containing the pivot text
@@ -85,7 +85,7 @@ get_neighbors_from_vector <- function(vec, annoy_model, n, search_k) {
   assert_that(is.count(n))
   assert_that(is.count(search_k) | search_k == -1)
   assert_that(length(annoy_model$getItemsVector(0)) == length(vec))
-  
+
   l <- annoy_model$getNNsByVectorList(vec, n, search_k, TRUE)
   l$text <- annoy_model@dict[l$item + 1]
   l
@@ -111,7 +111,7 @@ get_neighbors_from_vector <- function(vec, annoy_model, n, search_k) {
 #'                                     words = head(get_dictionary(model), 2e5))
 #'
 #' annoy_model <- get_annoy_model(word_embeddings, 5)
-#' 
+#'
 #' print(get_vector_from_text("the", annoy_model))
 #' }
 #' @export
@@ -137,7 +137,7 @@ get_neighbors_from_free_text <- function(text, annoy_model, n, search_k, project
   assert_that(is.string(text))
   assert_that(is.count(n))
   assert_that(is.count(search_k) | search_k == -1)
-  
+
   query_embedding <- projector_instance$average_vectors(texts = text)
   assert_that(all(!is.na(query_embedding)))
   l <- annoy_model$getNNsByVectorList(query_embedding, n, -1, TRUE)
@@ -148,7 +148,7 @@ get_neighbors_from_free_text <- function(text, annoy_model, n, search_k, project
 #' Get instance of projector for embedding averaging
 #'
 #' Generate an instance of projector tool dedicated to embedding averaging.
-#' Not to be used with 
+#' Not to be used with
 #'
 #' @param word_embeddings_mat a [matrix] containing word embeddings.
 #' @param na_if_unknwown_word [TRUE] to return [NA] if one of the word is unknown, [FALSE] to work with remaining known words
@@ -173,7 +173,7 @@ get_word_position <- function(word, annoy_model) {
 #' Save the content of the model in two files:
 #' * the [RcppAnnoy] model
 #' * the dictionary ([character] containing texts)
-#' 
+#'
 #' @param annoy_model [RcppAnnoy] model
 #' @param path_annoy path for the [RcppAnnoy] model
 #' @param path_dictionary path for the dictionary ([character] containing texts)
@@ -196,9 +196,9 @@ save_annoy_model <- function(annoy_model, path_annoy, path_dictionary) {
 #' Load the content of the model from two files:
 #' * the [RcppAnnoy] model
 #' * the dictionary ([character] containing texts)
-#' 
+#'
 #' Look at [get_annoy_model] documentation for an example.
-#' 
+#'
 #' @param path_annoy path to the [RcppAnnoy] model
 #' @param path_dictionary path to the dictionary ([character] containing texts)
 #' @importFrom assertthat assert_that is.string
