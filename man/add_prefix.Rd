@@ -9,7 +9,7 @@ add_prefix(texts, prefix)
 \arguments{
 \item{texts}{a \link{character} containing the original text}
 
-\item{unit}{\link{character} containing the prefix to add (length == 1) or \link{character} with same length than texts}
+\item{prefix}{unit \link{character} containing the prefix to add (length == 1) or \link{character} with same length than texts}
 }
 \value{
 \link{character} with prefixed words.

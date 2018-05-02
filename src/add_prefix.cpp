@@ -12,7 +12,7 @@ std::string add_pr(const std::string& line, const std::string& prefix);
 //' Code in C++ (efficient).
 //'
 //' @param texts a [character] containing the original text
-//' @param unit [character] containing the prefix to add (length == 1) or [character] with same length than texts
+//' @param prefix unit [character] containing the prefix to add (length == 1) or [character] with same length than texts
 //' @return [character] with prefixed words.
 //' @examples
 //' add_prefix(c("this is a test", "this is another    test"), "#")
