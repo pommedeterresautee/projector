@@ -9,7 +9,7 @@ Description: Display dense vector representation of texts on a 2D plan to better
   It also includes an interactive application to change dynamically the pivot text.
 URL: https://github.com/pommedeterresautee/projector
 BugReports: https://github.com/pommedeterresautee/projector/issues
-Depends: R (>= 3.3), Rcpp (>= 0.9.4)
+Depends: R (>= 3.3), Rcpp (>= 0.12.16)
 LinkingTo: Rcpp
 Imports: methods,
   RcppAnnoy (>= 0.0.10),

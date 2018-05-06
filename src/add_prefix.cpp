@@ -50,11 +50,10 @@ CharacterVector add_prefix(const CharacterVector& texts, CharacterVector prefix)
 std::string add_pr(const std::string& line, const std::string& prefix) {
   checkUserInterrupt();
   std::ostringstream stream;
-  std::locale loc("en_US.UTF-8");
 
   bool last_char_is_space = true;
   for (char current_char: line) {
-    if (last_char_is_space && std::isalnum(current_char, loc)) {
+    if (last_char_is_space && std::isalnum(current_char)) {
       stream << prefix;
       last_char_is_space = false;
     } else if (!last_char_is_space && std::isspace(current_char)) {
