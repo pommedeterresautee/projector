@@ -17,6 +17,14 @@ add_prefix <- function(texts, prefix) {
     .Call('_projector_add_prefix', PACKAGE = 'projector', texts, prefix)
 }
 
+add_pr <- function(line, prefix) {
+    .Call('_projector_add_pr', PACKAGE = 'projector', line, prefix)
+}
+
 #' @export projector
 NULL
 
+# Register entry points for exported C++ functions
+methods::setLoadAction(function(ns) {
+    .Call('_projector_RcppExport_registerCCallable', PACKAGE = 'projector')
+})
