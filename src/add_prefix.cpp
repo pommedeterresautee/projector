@@ -11,7 +11,6 @@ std::string add_pr(const std::string& line, const std::string& prefix);
 //' Add a prefix to each word
 //'
 //' Add a custom prefix to each word of a a line.
-//' Apply it even if the precedent the word is preceded by a punctuation.
 //' Code in C++ (efficient).
 //'
 //' @param texts a [character] containing the original text
@@ -37,29 +36,30 @@ CharacterVector add_prefix(const CharacterVector& texts, CharacterVector prefix)
 
   CharacterVector result(texts.size());
 
-  for (int i = 0; i < texts.size(); ++i) {
+  for (size_t i = 0; i < texts.size(); ++i) {
     if (!unique_prefix) {
       current_prefix = as<std::string>(prefix[i]);
     }
     result[i] = add_pr(as<std::string>(texts[i]), current_prefix);
   }
-  return wrap(result);
+  return result;
 }
 
-// [[Rcpp::export]]
-std::string add_pr(const std::string& line, const std::string& prefix) {
-  checkUserInterrupt();
-  std::ostringstream stream;
+inline std::string add_pr(const std::string& line, const std::string& prefix) {
+  if (line.size() % 10 == 0) checkUserInterrupt();
+
+  std::string result;
+  result.reserve(line.size() * 2);
 
   bool last_char_is_space = true;
+  bool current_char_is_space;
   for (char current_char: line) {
-    if (last_char_is_space && std::isalnum(current_char)) {
-      stream << prefix;
-      last_char_is_space = false;
-    } else if (!last_char_is_space && std::isspace(current_char)) {
-      last_char_is_space = true;
+    current_char_is_space = std::isspace(current_char);
+    if (last_char_is_space && !current_char_is_space) {
+      result += prefix;
     }
-    stream << current_char;
+    last_char_is_space = current_char_is_space;
+    result += current_char;
   }
-  return stream.str();
+  return result;
 }

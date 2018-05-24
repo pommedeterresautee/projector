@@ -4,7 +4,6 @@
 #' Add a prefix to each word
 #'
 #' Add a custom prefix to each word of a a line.
-#' Apply it even if the precedent the word is preceded by a punctuation.
 #' Code in C++ (efficient).
 #'
 #' @param texts a [character] containing the original text
@@ -15,10 +14,6 @@
 #' @export
 add_prefix <- function(texts, prefix) {
     .Call('_projector_add_prefix', PACKAGE = 'projector', texts, prefix)
-}
-
-add_pr <- function(line, prefix) {
-    .Call('_projector_add_pr', PACKAGE = 'projector', line, prefix)
 }
 
 #' @export projector

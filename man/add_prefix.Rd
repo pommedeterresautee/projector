@@ -16,7 +16,6 @@ add_prefix(texts, prefix)
 }
 \description{
 Add a custom prefix to each word of a a line.
-Apply it even if the precedent the word is preceded by a punctuation.
 Code in C++ (efficient).
 }
 \examples{
