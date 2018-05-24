@@ -16,6 +16,10 @@ add_prefix <- function(texts, prefix) {
     .Call('_projector_add_prefix', PACKAGE = 'projector', texts, prefix)
 }
 
+add_pr <- function(line, prefix) {
+    .Call('_projector_add_pr', PACKAGE = 'projector', line, prefix)
+}
+
 #' @export projector
 NULL
 

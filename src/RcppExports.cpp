@@ -39,12 +39,44 @@ RcppExport SEXP _projector_add_prefix(SEXP textsSEXP, SEXP prefixSEXP) {
     UNPROTECT(1);
     return rcpp_result_gen;
 }
+// add_pr
+std::string add_pr(const std::string& line, const std::string& prefix);
+static SEXP _projector_add_pr_try(SEXP lineSEXP, SEXP prefixSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< const std::string& >::type line(lineSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type prefix(prefixSEXP);
+    rcpp_result_gen = Rcpp::wrap(add_pr(line, prefix));
+    return rcpp_result_gen;
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _projector_add_pr(SEXP lineSEXP, SEXP prefixSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_projector_add_pr_try(lineSEXP, prefixSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
+}
 
 // validate (ensure exported C++ functions exist before calling them)
 static int _projector_RcppExport_validate(const char* sig) { 
     static std::set<std::string> signatures;
     if (signatures.empty()) {
         signatures.insert("CharacterVector(*add_prefix)(const CharacterVector&,CharacterVector)");
+        signatures.insert("std::string(*add_pr)(const std::string&,const std::string&)");
     }
     return signatures.find(sig) != signatures.end();
 }
@@ -52,6 +84,7 @@ static int _projector_RcppExport_validate(const char* sig) {
 // registerCCallable (register entry points for exported C++ functions)
 RcppExport SEXP _projector_RcppExport_registerCCallable() { 
     R_RegisterCCallable("projector", "_projector_add_prefix", (DL_FUNC)_projector_add_prefix_try);
+    R_RegisterCCallable("projector", "_projector_add_pr", (DL_FUNC)_projector_add_pr_try);
     R_RegisterCCallable("projector", "_projector_RcppExport_validate", (DL_FUNC)_projector_RcppExport_validate);
     return R_NilValue;
 }
@@ -60,6 +93,7 @@ RcppExport SEXP _rcpp_module_boot_PROJECTOR_MODULE();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_projector_add_prefix", (DL_FUNC) &_projector_add_prefix, 2},
+    {"_projector_add_pr", (DL_FUNC) &_projector_add_pr, 2},
     {"_rcpp_module_boot_PROJECTOR_MODULE", (DL_FUNC) &_rcpp_module_boot_PROJECTOR_MODULE, 0},
     {"_projector_RcppExport_registerCCallable", (DL_FUNC) &_projector_RcppExport_registerCCallable, 0},
     {NULL, NULL, 0}

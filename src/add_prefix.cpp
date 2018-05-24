@@ -45,7 +45,8 @@ CharacterVector add_prefix(const CharacterVector& texts, CharacterVector prefix)
   return result;
 }
 
-inline std::string add_pr(const std::string& line, const std::string& prefix) {
+// [[Rcpp::export]]
+std::string add_pr(const std::string& line, const std::string& prefix) {
   if (line.size() % 10 == 0) checkUserInterrupt();
 
   std::string result;

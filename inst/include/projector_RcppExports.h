@@ -43,6 +43,25 @@ namespace projector {
         return Rcpp::as<CharacterVector >(rcpp_result_gen);
     }
 
+    inline std::string add_pr(const std::string& line, const std::string& prefix) {
+        typedef SEXP(*Ptr_add_pr)(SEXP,SEXP);
+        static Ptr_add_pr p_add_pr = NULL;
+        if (p_add_pr == NULL) {
+            validateSignature("std::string(*add_pr)(const std::string&,const std::string&)");
+            p_add_pr = (Ptr_add_pr)R_GetCCallable("projector", "_projector_add_pr");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_add_pr(Shield<SEXP>(Rcpp::wrap(line)), Shield<SEXP>(Rcpp::wrap(prefix)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<std::string >(rcpp_result_gen);
+    }
+
 }
 
 #endif // RCPP_projector_RCPPEXPORTS_H_GEN_
