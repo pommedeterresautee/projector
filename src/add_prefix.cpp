@@ -4,8 +4,6 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-static const std::string SPACE = " ";
-
 std::string add_pr(const std::string& line, const std::string& prefix);
 
 //' Add a prefix to each word
