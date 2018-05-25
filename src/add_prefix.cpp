@@ -34,7 +34,7 @@ CharacterVector add_prefix(const CharacterVector& texts, CharacterVector prefix)
 
   CharacterVector result(texts.size());
 
-  for (size_t i = 0; i < texts.size(); ++i) {
+  for (R_len_t i = 0; i < texts.size(); ++i) {
     if (!unique_prefix) {
       current_prefix = as<std::string>(prefix[i]);
     }
@@ -48,15 +48,16 @@ std::string add_pr(const std::string& line, const std::string& prefix) {
   if (line.size() % 10 == 0) checkUserInterrupt();
 
   std::string result;
-  result.reserve(line.size() * 2);
+  result.reserve(line.size() * 1.5);
 
   bool last_char_is_space = true;
   bool current_char_is_space;
-  for (char current_char: line) {
-    current_char_is_space = std::isspace(current_char);
+  for (const char& current_char: line) {
+    current_char_is_space = (current_char == ' ') | (current_char == '\t');
     if (last_char_is_space && !current_char_is_space) {
       result += prefix;
     }
+
     last_char_is_space = current_char_is_space;
     result += current_char;
   }

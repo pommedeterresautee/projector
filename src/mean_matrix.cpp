@@ -52,7 +52,7 @@ public:
 
     NumericMatrix result_mat(texts.size(), nb_columns);
 
-    for (int text_index = 0; text_index < texts.size(); text_index++) {
+    for (R_xlen_t text_index = 0; text_index < texts.size(); text_index++) {
       if (text_index % 100 == 0) {
         checkUserInterrupt();
       }
@@ -131,7 +131,7 @@ private:
 
   void search_position(const std::vector<std::string>& searched_words, std::vector<size_t>& index_match_rows, bool& return_na, bool break_if_unknwown_word) {
     std::map<std::string, int >::iterator p;
-    for (int word_index = 0; word_index < searched_words.size(); ++word_index) {
+    for (size_t word_index = 0; word_index < searched_words.size(); ++word_index) {
       p = map_row_names_position.find(searched_words[word_index]);
       if(p != map_row_names_position.end()) {
         index_match_rows.push_back(p->second);
