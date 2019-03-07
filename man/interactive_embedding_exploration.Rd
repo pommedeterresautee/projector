@@ -4,8 +4,9 @@
 \alias{interactive_embedding_exploration}
 \title{Interactive exploration of embeddings}
 \usage{
-interactive_embedding_exploration(annoy_model, default_number_neighbors = 100,
-  default_number_rounds = 500, default_perplexity = 30)
+interactive_embedding_exploration(annoy_model,
+  default_number_neighbors = 100, default_number_rounds = 500,
+  default_perplexity = 30)
 }
 \arguments{
 \item{annoy_model}{\link{RcppAnnoy} model generated with \link{get_annoy_model}}

@@ -4,12 +4,11 @@
 \name{projector}
 \alias{projector}
 \alias{projector-package}
-\alias{projector-package}
 \title{projector: Project Dense Vectors Representation of Texts on a 2D Plan}
 \description{
 Display dense vector representation of texts on a 2D plan to better
-understand embeddings by observing the neighbors of a selected text.
-It also includes an interactive application to change dynamically the pivot text.
+  understand embeddings by observing the neighbors of a selected text.
+  It also includes an interactive application to change dynamically the pivot text.
 }
 \seealso{
 Useful links:

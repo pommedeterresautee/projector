@@ -4,7 +4,8 @@
 \alias{get_coordinates_pca}
 \title{Compute 2D coordinates using PCA}
 \usage{
-get_coordinates_pca(vectors, transformations = c("center", "scaled"), ...)
+get_coordinates_pca(vectors, transformations = c("center", "scaled"),
+  ...)
 }
 \arguments{
 \item{vectors}{\link{matrix} containing the \code{n} closest neighbor}

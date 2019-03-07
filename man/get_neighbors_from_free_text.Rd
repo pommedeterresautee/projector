@@ -4,7 +4,8 @@
 \alias{get_neighbors_from_free_text}
 \title{Retrieve the most closest vector representation of a (free) text}
 \usage{
-get_neighbors_from_free_text(text, annoy_model, n, search_k, projector_instance)
+get_neighbors_from_free_text(text, annoy_model, n, search_k,
+  projector_instance)
 }
 \arguments{
 \item{text}{\link{character} containing the text searched.}
